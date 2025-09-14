@@ -41,18 +41,16 @@ OFFLINE 离线检测模块是一个基于 OSAL（操作系统抽象层）的设�
   ### OfflineDevice_t
   
   ```c
-  typedef struct {
-      char name[32];            // 设备名称
-      uint32_t timeout_ms;      // 超时时间（毫秒）
-      OfflineLevel_e level;     // 离线等级
-      uint8_t beep_times;       // 蜂鸣次数
-      bool is_offline;          // 离线状态
-      uint32_t last_time;       // 上次更新时间
-      uint8_t index;            // 索引字段
-      uint8_t enable;           // 是否启用检测
-      float dt;                 // 时间间隔
-      uint32_t dt_cnt;          // 时间计数器
-  } OfflineDevice_t; 
+    typedef struct {
+        char name[32];            // 设备名称
+        uint32_t timeout_ms;      // 超时时间（毫秒）
+        OfflineLevel_e level;     // 离线等级
+        uint8_t beep_times;       // 蜂鸣次数
+        bool is_offline;          // 离线状态
+        uint32_t last_time;       // 上次更新时间
+        uint8_t index;            // 索引字段
+        uint8_t enable;           // 是否启用检测
+    } OfflineDevice_t; 
   ```
   
   ### OfflineManager_t
@@ -95,7 +93,9 @@ OFFLINE 离线检测模块是一个基于 OSAL（操作系统抽象层）的设�
   ```c
   void offline_init(void);
   ```
-  
+  ```c
+  void offline_task_function();
+  ```
   ```c
   uint8_t offline_device_register(const OfflineDeviceInit_t* init);
   ```

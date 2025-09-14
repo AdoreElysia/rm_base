@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 19:45:56
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-13 08:48:59
+ * @LastEditTime: 2025-09-14 12:56:29
  * @FilePath: /rm_base/modules/OFFLINE/offline.h
  * @Description: 
  */
@@ -47,9 +47,6 @@ typedef struct {
     uint32_t last_time;
     uint8_t index;          // 索引字段，用于快速更新
     uint8_t enable;         // 是否启用检测
-
-    float dt;
-    uint32_t dt_cnt;
 } OfflineDevice_t; 
 
 // 离线管理器结构体
@@ -65,6 +62,11 @@ typedef struct {
  * @return {*}
  */
 void offline_init();
+/**
+ * @description: offline 线程运行函数，在线程里调用
+ * @return {*}
+ */
+void offline_task_function();
 /**
  * @description: 注册设备
  * @param {OfflineDeviceInit_t*} init

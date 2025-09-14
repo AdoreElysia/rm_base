@@ -2,16 +2,14 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 19:45:50
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-13 10:08:13
+ * @LastEditTime: 2025-09-14 13:07:25
  * @FilePath: /rm_base/modules/OFFLINE/offline.c
  * @Description: 
  */
 #include "offline.h"
 #include "beep.h"
 #include "bsp_dwt.h"
-#include "iwdg.h"
 #include "modules_config.h"
-#include "osal_def.h"
 #include "rgb.h"
 #include <stdint.h>
 #include "shell.h"
@@ -23,74 +21,59 @@
 
 // 静态变量
 static OfflineManager_t offline_manager;
-static osal_thread_t offline_thread;
 static uint8_t current_beep_times;
-OFFLINE_THREAD_STACK_SECTION static uint8_t offline_thread_stack[OFFLINE_THREAD_STACK_SIZE];
 static void beep_ctrl_times(ULONG timer);
 static void shell_offline_cmd(int argc, char **argv);
 
-void offline_task(ULONG thread_input)
+void offline_task_function()
 {    
-    (void)(thread_input);
-    #if OFFLINE_WATCHDOG_ENABLE
-        __HAL_DBGMCU_FREEZE_IWDG();
-        MX_IWDG_Init();
-    #endif
-    for (;;)
-    {
-        static uint8_t highest_error_level = 0;
-        static uint8_t alarm_device_index = OFFLINE_INVALID_INDEX;
-        uint32_t current_time = tx_time_get();
+    static uint8_t highest_error_level = 0;
+    static uint8_t alarm_device_index = OFFLINE_INVALID_INDEX;
+    uint32_t current_time = tx_time_get();
         
-        // 重置错误状态
-        highest_error_level = 0;
-        alarm_device_index = OFFLINE_INVALID_INDEX;
-        bool any_device_offline = false;
+    // 重置错误状态
+    highest_error_level = 0;
+    alarm_device_index = OFFLINE_INVALID_INDEX;
+    bool any_device_offline = false;
     
-        // 检查所有设备状态
-        for (uint8_t i = 0; i < offline_manager.device_count; i++) {
-            OfflineDevice_t* device = &offline_manager.devices[i];
-            
-            if (!device->enable) {continue;}
-    
-            if (current_time - device->last_time > device->timeout_ms) {
-                device->is_offline = STATE_OFFLINE;
-                any_device_offline = true;
+    // 检查所有设备状态
+    for (uint8_t i = 0; i < offline_manager.device_count; i++) {
+        OfflineDevice_t* device = &offline_manager.devices[i];    
+        
+        if (!device->enable) {continue;}
+        
+        if (current_time - device->last_time > device->timeout_ms) {
+            device->is_offline = STATE_OFFLINE;
+            any_device_offline = true;
                 
-                // 更新最高优先级设备
-                if (device->level > highest_error_level) {
-                    highest_error_level = device->level;
+            // 更新最高优先级设备
+            if (device->level > highest_error_level) {
+                highest_error_level = device->level;
+                alarm_device_index = i;
+                current_beep_times = device->beep_times;
+            }
+            // 相同优先级时的处理
+            else if (device->level == highest_error_level) {
+                // 如果当前设备不需要蜂鸣（beep_times=0），保持原来的设备
+                if (device->beep_times == 0) {continue;}
+                // 如果之前选中的设备不需要蜂鸣，或者当前设备蜂鸣次数更少
+                if (current_beep_times == 0 || (device->beep_times > 0 && device->beep_times < current_beep_times)) {
                     alarm_device_index = i;
                     current_beep_times = device->beep_times;
                 }
-                // 相同优先级时的处理
-                else if (device->level == highest_error_level) {
-                    // 如果当前设备不需要蜂鸣（beep_times=0），保持原来的设备
-                    if (device->beep_times == 0) {continue;}
-                    // 如果之前选中的设备不需要蜂鸣，或者当前设备蜂鸣次数更少
-                    if (current_beep_times == 0 || (device->beep_times > 0 && device->beep_times < current_beep_times)) {
-                        alarm_device_index = i;
-                        current_beep_times = device->beep_times;
-                    }
-                }
-            } else {
-                device->is_offline = STATE_ONLINE;
             }
-        }
-    
-        // 触发报警或清除报警
-        if (alarm_device_index != OFFLINE_INVALID_INDEX && any_device_offline) {
-            // 已在上面设置了current_beep_times
         } else {
-            // 所有设备都在线，清除报警
-            current_beep_times = 0;
-            RGB_show(LED_Green);              // 表示所有设备都在线
+            device->is_offline = STATE_ONLINE;
         }
-        #if OFFLINE_WATCHDOG_ENABLE
-            HAL_IWDG_Refresh(&hiwdg);
-        #endif
-
-        tx_thread_sleep(10);
+    }
+    
+    // 触发报警或清除报警
+    if (alarm_device_index != OFFLINE_INVALID_INDEX && any_device_offline) {
+        // 已在上面设置了current_beep_times
+    } else {
+        // 所有设备都在线，清除报警
+        current_beep_times = 0;
+        RGB_show(LED_Green);              // 表示所有设备都在线
     }
 }
 
@@ -99,20 +82,12 @@ void offline_init(void)
 {
     // 初始化管理器
     memset(&offline_manager, 0, sizeof(offline_manager)); 
-    osal_status_t status = osal_thread_create(&offline_thread, "offlineTask", offline_task, 
-    0,offline_thread_stack, OFFLINE_THREAD_STACK_SIZE,OFFLINE_THREAD_PRIORITY);
-
-    if(status != TX_SUCCESS) {
-        LOG_ERROR("Failed to create offline task!");
-        return;
-    }
-    status = osal_thread_start(&offline_thread);
 
     beep_init(2000, 10, beep_ctrl_times);
     
     shell_register_function("offline", shell_offline_cmd, "Show offline device information");
 
-    LOG_INFO("Offline task initialized successfully.");
+    LOG_INFO("Offline init successfully.");
 }
 
 uint8_t offline_device_register(const OfflineDeviceInit_t* init)
@@ -130,7 +105,7 @@ uint8_t offline_device_register(const OfflineDeviceInit_t* init)
     device->level = init->level;
     device->beep_times = init->beep_times;
     device->is_offline = STATE_OFFLINE;
-    device->last_time = tx_time_get();
+    device->last_time = 0;
     device->index = index;
     device->enable = init->enable;
     
@@ -145,7 +120,6 @@ void offline_device_update(uint8_t device_index)
 {
         if (device_index < offline_manager.device_count) {
             offline_manager.devices[device_index].last_time = tx_time_get();
-            offline_manager.devices[device_index].dt = DWT_GetDeltaT(&offline_manager.devices[device_index].dt_cnt);
         }
 }
 
@@ -312,6 +286,8 @@ void shell_offline_cmd(int argc, char **argv)
 
 #else   
 void offline_init(void){}
+
+void offline_task_function(){}
 void offline_device_update(uint8_t device_index){}
 void offline_device_enable(uint8_t device_index){}
 void offline_device_disable(uint8_t device_index){}

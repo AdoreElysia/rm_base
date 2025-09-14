@@ -4,12 +4,14 @@ set(name APPLICATIONS)
 
 add_library(${name} STATIC
     robot_init/robot_init.c
+    offline_task/offline_task.c
 )
 
 # 设置包含目录
 target_include_directories(${name}
     PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/robot_init
+    ${CMAKE_CURRENT_SOURCE_DIR}/offline_task
 )
 
 # 链接必要的库
