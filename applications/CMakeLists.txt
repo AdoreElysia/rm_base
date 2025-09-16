@@ -7,6 +7,7 @@ add_library(${name} STATIC
     offline_task/offline_task.c
     ins_task/ins_task.c
     remote_task/remote_task.c
+    dm_imu_task/dm_imu_task.c
 )
 
 # 设置包含目录
@@ -16,6 +17,7 @@ target_include_directories(${name}
     ${CMAKE_CURRENT_SOURCE_DIR}/offline_task
     ${CMAKE_CURRENT_SOURCE_DIR}/ins_task
     ${CMAKE_CURRENT_SOURCE_DIR}/remote_task
+    ${CMAKE_CURRENT_SOURCE_DIR}/dm_imu_task
 )
 
 # 链接必要的库

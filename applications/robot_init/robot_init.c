@@ -2,12 +2,14 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-13 10:14:45
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-16 00:00:05
+ * @LastEditTime: 2025-09-16 18:45:29
  * @FilePath: /rm_base/applications/robot_init/robot_init.c
  * @Description: 
  */
 #include "robot_init.h"
 #include "bsp_dwt.h"
+#include "dm_imu.h"
+#include "dm_imu_task.h"
 #include "ins.h"
 #include "log.h"
 #include "offline.h"
@@ -31,12 +33,14 @@ void modules_init(){
   offline_init();
   ins_init();
   remote_init();
+  dm_imu_init();
 }
 
 void app_init(){
   offline_task_init();
   ins_task_init();
   remote_task_init();
+  dm_imu_task_init();
 }
 
 

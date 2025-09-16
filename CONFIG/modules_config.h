@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 10:28:00
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-15 21:29:06
+ * @LastEditTime: 2025-09-16 10:12:20
  * @FilePath: /rm_base/CONFIG/modules_config.h
  * @Description: 
  */
@@ -46,6 +46,9 @@
 #define REMOTE_VT_UART                    huart6                                //图传串口
 #define REMOTE_UART_RX_BUF_SIZE           30                                    // 定义遥控器接收缓冲区大小
 #define REMOTE_DEAD_ZONE                  10                                    // 定义遥控器死区范围
-
+/* DM_IMU 模块 */
+#define DM_IMU_RX_ID                      0x11                                  // 达妙IMU的接收
+#define DM_IMU_TX_ID                      0x6FF                                 // 达妙IMU的发送
+#define DM_IMU_CAN_BUS                    hcan2                                 // 达妙IMU使用的CAN总线
 
 #endif // _MODULES_CONFIG_H_
