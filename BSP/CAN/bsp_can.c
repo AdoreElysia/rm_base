@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-09 17:03:48
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-10 00:01:47
+ * @LastEditTime: 2025-09-17 16:28:40
  * @FilePath: /rm_base/BSP/CAN/bsp_can.c
  * @Description: 
  */
@@ -114,7 +114,7 @@ static CANBusManager* BSP_CAN_InitBusManager(CAN_HandleTypeDef *hcan)
             can_bus_managers[i].device_count = 0;
             
             // 创建总线互斥锁
-            char mutex_name[16];
+            static char mutex_name[16];
             snprintf(mutex_name, sizeof(mutex_name), "CAN_Mutex_%d", i);
             osal_mutex_create(&can_bus_managers[i].bus_mutex, mutex_name);
             
