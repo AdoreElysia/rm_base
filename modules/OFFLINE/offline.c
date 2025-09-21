@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 19:45:50
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-17 16:08:08
+ * @LastEditTime: 2025-09-21 10:42:36
  * @FilePath: /rm_base/modules/OFFLINE/offline.c
  * @Description: 
  */
@@ -10,89 +10,44 @@
 #include "beep.h"
 #include "bsp_dwt.h"
 #include "modules_config.h"
+#include "osal_def.h"
 #include "rgb.h"
 #include <stdint.h>
+#include <string.h>
 #include "shell.h"
-
-#ifdef OFFLINE_MODULE
 
 #define log_tag  "offline"
 #include "log.h"
 
-// 静态变量
-static OfflineManager_t offline_manager;
-static uint8_t current_beep_times;
+// 静态变量指针，指向应用层管理的数据
+static OfflineManager_t* offline_manager_ptr = NULL;
+static uint8_t* current_beep_times_ptr = NULL;
+// 函数声明
 static void beep_ctrl_times(ULONG timer);
 static void shell_offline_cmd(int argc, char **argv);
 
-void offline_task_function()
-{    
-    static uint8_t highest_error_level = 0;
-    static uint8_t alarm_device_index = OFFLINE_INVALID_INDEX;
-    uint32_t current_time = tx_time_get();
-        
-    // 重置错误状态
-    highest_error_level = 0;
-    alarm_device_index = OFFLINE_INVALID_INDEX;
-    bool any_device_offline = false;
-    bool all_same_level_are_beep_zero = true;  // 假设所有相同优先级设备beep_times都为0
-    
-    // 检查所有设备状态
-    for (uint8_t i = 0; i < offline_manager.device_count; i++) {
-        OfflineDevice_t* device = &offline_manager.devices[i];    
-        
-        if (!device->enable) {continue;}
-        
-        if (current_time - device->last_time > device->timeout_ms) {
-            device->is_offline = STATE_OFFLINE;
-            any_device_offline = true;
-                
-            // 更新最高优先级设备
-            if (device->level > highest_error_level) {
-                highest_error_level = device->level;
-                alarm_device_index = i;
-                current_beep_times = device->beep_times;
-                all_same_level_are_beep_zero = (device->beep_times == 0);  // 更新初始状态
-            }
-            // 相同优先级时的处理
-            else if (device->level == highest_error_level) {
-                // 检查是否所有相同优先级的设备beep_times都为0
-                if (device->beep_times != 0) {
-                    all_same_level_are_beep_zero = false;
-                }
-                
-                // 如果当前设备不需要蜂鸣（beep_times=0），保持原来的设备
-                if (device->beep_times == 0) {continue;}
-                // 如果之前选中的设备不需要蜂鸣，或者当前设备蜂鸣次数更少
-                if (current_beep_times == 0 || (device->beep_times > 0 && device->beep_times < current_beep_times)) {
-                    alarm_device_index = i;
-                    current_beep_times = device->beep_times;
-                }
-            }
-        } else {
-            device->is_offline = STATE_ONLINE;
-        }
-    }
-    
-    // 触发报警或清除报警
-    if (alarm_device_index != OFFLINE_INVALID_INDEX && any_device_offline && !all_same_level_are_beep_zero) {
-        // 有需要蜂鸣的设备离线
-    } else if (any_device_offline && all_same_level_are_beep_zero) {
-        // 相同优先级且beep_times都为0的设备离线，常亮红灯
-        RGB_show(LED_Red);
-    } else {
-        // 所有设备都在线，清除报警
-        current_beep_times = 0;
-        RGB_show(LED_Green);              // 表示所有设备都在线
+
+// 设置静态变量指针
+void offline_set_data_pointers(OfflineManager_t* manager, uint8_t* beep_times) {
+    offline_manager_ptr = manager;
+    current_beep_times_ptr = beep_times;
+}
+
+// 添加锁操作函数
+static void offline_mutex_lock(void) {
+    if (offline_manager_ptr) {
+        osal_mutex_lock(&offline_manager_ptr->mutex, OSAL_WAIT_FOREVER);
     }
 }
 
+static void offline_mutex_unlock(void) {
+    if (offline_manager_ptr) {
+        osal_mutex_unlock(&offline_manager_ptr->mutex);
+    }
+}
 
 void offline_init(void)
 {
-    // 初始化管理器
-    memset(&offline_manager, 0, sizeof(offline_manager)); 
-
     beep_init(2000, 10, beep_ctrl_times);
     
     shell_register_function("offline", shell_offline_cmd, "Show offline device information");
@@ -102,12 +57,14 @@ void offline_init(void)
 
 uint8_t offline_device_register(const OfflineDeviceInit_t* init)
 {
-    if (init == NULL || offline_manager.device_count >= MAX_OFFLINE_DEVICES) {
+    if (offline_manager_ptr == NULL || init == NULL || offline_manager_ptr->device_count >= MAX_OFFLINE_DEVICES) {
         return OFFLINE_INVALID_INDEX;
     }
+
+    offline_mutex_lock(); 
     
-    uint8_t index = offline_manager.device_count;
-    OfflineDevice_t* device = &offline_manager.devices[index];
+    uint8_t index = offline_manager_ptr->device_count;
+    OfflineDevice_t* device = &offline_manager_ptr->devices[index];
     
     strncpy(device->name, init->name, sizeof(device->name) - 1);
     device->name[sizeof(device->name) - 1] = '\0'; // 确保字符串结束符
@@ -119,7 +76,9 @@ uint8_t offline_device_register(const OfflineDeviceInit_t* init)
     device->index = index;
     device->enable = init->enable;
     
-    offline_manager.device_count++;
+    offline_manager_ptr->device_count++;
+
+    offline_mutex_unlock();
 
     LOG_INFO("offline device register: %s", device->name);
 
@@ -128,39 +87,67 @@ uint8_t offline_device_register(const OfflineDeviceInit_t* init)
 
 void offline_device_update(uint8_t device_index)
 {
-        if (device_index < offline_manager.device_count) {
-            offline_manager.devices[device_index].last_time = tx_time_get();
-        }
+    if (offline_manager_ptr != NULL) {
+        offline_mutex_lock();
+        if (device_index < offline_manager_ptr->device_count) {
+            offline_manager_ptr->devices[device_index].last_time = tx_time_get();
+        }   
+        offline_mutex_unlock();
+    }
 }
 
 void offline_device_enable(uint8_t device_index)
 {
-        if (device_index < offline_manager.device_count) {
-            offline_manager.devices[device_index].enable = OFFLINE_ENABLE;
+    if (offline_manager_ptr != NULL) {
+        offline_mutex_lock();
+        if (device_index < offline_manager_ptr->device_count) {
+            offline_manager_ptr->devices[device_index].enable = OFFLINE_ENABLE;
         }
+        offline_mutex_unlock();
+    }
 }
 
 void offline_device_disable(uint8_t device_index)
 {
-        if (device_index < offline_manager.device_count) {
-            offline_manager.devices[device_index].enable = OFFLINE_DISABLE;
+    if (offline_manager_ptr != NULL) {
+        offline_mutex_lock();
+        if (device_index < offline_manager_ptr->device_count) {
+            offline_manager_ptr->devices[device_index].enable = OFFLINE_DISABLE;
         }
+        offline_mutex_unlock();
+    }
 }
 uint8_t get_device_status(uint8_t device_index){
-        if(device_index < offline_manager.device_count){
-            return offline_manager.devices[device_index].is_offline;
+    if (offline_manager_ptr != NULL) {
+        offline_mutex_lock();
+        if(device_index < offline_manager_ptr->device_count){
+            if (offline_manager_ptr->devices[device_index].enable == OFFLINE_ENABLE)
+            {
+                return offline_manager_ptr->devices[device_index].is_offline;
+            }else
+            {
+                return STATE_ONLINE;
+            }
         }
-        else {return STATE_ONLINE;}
+        offline_mutex_unlock();
+    }
+    return STATE_OFFLINE;
 }
 
 uint8_t get_system_status(void){
-    uint8_t status = 0;
-    for (uint8_t i = 0; i < offline_manager.device_count; i++) {
-        if (offline_manager.devices[i].is_offline) {
-            status |= (1 << i);
+    if (offline_manager_ptr == NULL) {
+        return STATE_OFFLINE;
+    }else {
+        offline_mutex_lock();
+        uint8_t status = 0;
+        for (uint8_t i = 0; i < offline_manager_ptr->device_count; i++) {
+            if (offline_manager_ptr->devices[i].is_offline) {
+                status |= (1 << i);
+            }
         }
+        offline_mutex_unlock();
+        return status;    
     }
-    return status;
 }
 
 void beep_ctrl_times(ULONG timer)
@@ -169,46 +156,45 @@ void beep_ctrl_times(ULONG timer)
     static uint32_t beep_cycle_start_time;
     static uint8_t remaining_beep_cycles;
 
-    if (DWT_GetTimeline_ms() - beep_period_start_time > OFFLINE_BEEP_PERIOD)
-    {
-        remaining_beep_cycles = current_beep_times;
-        beep_period_start_time = DWT_GetTimeline_ms();
-        beep_cycle_start_time = DWT_GetTimeline_ms();
-    }
-    else if (remaining_beep_cycles != 0)
-    {
-        if (DWT_GetTimeline_ms() - beep_cycle_start_time < OFFLINE_BEEP_ON_TIME)
+    if (current_beep_times_ptr != NULL) {
+        if (DWT_GetTimeline_ms() - beep_period_start_time > OFFLINE_BEEP_PERIOD)
         {
-            #if OFFLINE_BEEP_ENABLE == 1
-            beep_set_tune(OFFLINE_BEEP_TUNE_VALUE, OFFLINE_BEEP_CTRL_VALUE);
-            #else
-            beep_set_tune(0, 0);
-            #endif
-            RGB_show(LED_Red);
-        }
-        else if (DWT_GetTimeline_ms() - beep_cycle_start_time < OFFLINE_BEEP_ON_TIME + OFFLINE_BEEP_OFF_TIME)
-        {
-            beep_set_tune(0, 0);
-            RGB_show(LED_Black);
-        }
-        else
-        {
-            remaining_beep_cycles--;
+            remaining_beep_cycles = *current_beep_times_ptr;
+            beep_period_start_time = DWT_GetTimeline_ms();
             beep_cycle_start_time = DWT_GetTimeline_ms();
         }
+        else if (remaining_beep_cycles != 0)
+        {
+            if (DWT_GetTimeline_ms() - beep_cycle_start_time < OFFLINE_BEEP_ON_TIME)
+            {
+                #if OFFLINE_BEEP_ENABLE == 1
+                beep_set_tune(OFFLINE_BEEP_TUNE_VALUE, OFFLINE_BEEP_CTRL_VALUE);
+                #else
+                beep_set_tune(0, 0);
+                #endif
+                RGB_show(LED_Red);
+            }
+            else if (DWT_GetTimeline_ms() - beep_cycle_start_time < OFFLINE_BEEP_ON_TIME + OFFLINE_BEEP_OFF_TIME)
+            {
+                beep_set_tune(0, 0);
+                RGB_show(LED_Black);
+            }
+            else
+            {
+                remaining_beep_cycles--;
+                beep_cycle_start_time = DWT_GetTimeline_ms();
+            }
+        }
+    }else {
+        // 确保在指针无效时关闭蜂鸣器
+        beep_set_tune(0, 0);
     }
 }
 
 // shell命令处理函数
-
-// 添加获取设备信息的函数，供shell命令使用
-const OfflineManager_t* offline_get_manager_info(void)
-{
-    return &offline_manager;
-}
 void shell_offline_cmd(int argc, char **argv)
 {
-    const OfflineManager_t* manager = offline_get_manager_info();
+    const OfflineManager_t* manager = offline_manager_ptr;
     
     if (argc < 2) {
         // 显示帮助信息
@@ -232,6 +218,8 @@ void shell_offline_cmd(int argc, char **argv)
             return;
         }
         
+        offline_mutex_lock(); 
+
         for (uint8_t i = 0; i < manager->device_count; i++) {
             const OfflineDevice_t* device = &manager->devices[i];
             const char* status_str = device->is_offline ? "OFFLINE" : "ONLINE";
@@ -260,6 +248,8 @@ void shell_offline_cmd(int argc, char **argv)
                         level_str,
                         device->beep_times);
         }
+
+        offline_mutex_unlock(); 
         
         shell_printf("\r\nTotal devices: %d\r\n", manager->device_count);
         shell_printf("\r\n");
@@ -267,19 +257,9 @@ void shell_offline_cmd(int argc, char **argv)
     else if (strcmp(argv[1], "status") == 0) {
         // 显示系统整体离线状态
         uint8_t system_status = get_system_status();
-        bool any_offline = false;
         
-        for (uint8_t i = 0; i < manager->device_count; i++) {
-            if (manager->devices[i].is_offline) {
-                any_offline = true;
-                break;
-            }
-        }
-        
-        shell_printf("System Offline Status:\r\n");
-        shell_printf("----------------------\r\n");
-        if (any_offline) {
-            shell_printf("Status: OFFLINE (0x%02X)\r\n", system_status);
+        if (system_status) {
+            shell_printf("Status: OFFLINE\r\n");
             shell_printf("Some devices are offline!\r\n");
         } else {
             shell_printf("Status: ALL ONLINE\r\n");
@@ -293,16 +273,4 @@ void shell_offline_cmd(int argc, char **argv)
         shell_printf("\r\n");
     }
 }
-
-#else   
-void offline_init(void){}
-
-void offline_task_function(){}
-void offline_device_update(uint8_t device_index){}
-void offline_device_enable(uint8_t device_index){}
-void offline_device_disable(uint8_t device_index){}
-uint8_t get_device_status(uint8_t device_index){return OFFLINE_INVALID_INDEX;}
-uint8_t get_system_status(void) { return 0;}
-
-#endif
 

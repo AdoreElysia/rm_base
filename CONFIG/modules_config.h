@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 10:28:00
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-20 09:02:08
+ * @LastEditTime: 2025-09-21 10:38:16
  * @FilePath: /rm_base/CONFIG/modules_config.h
  * @Description: 
  */
@@ -28,7 +28,7 @@
 #endif
 /* OFFLINE 模块 */ 
 #define MAX_OFFLINE_DEVICES               12                                    // 最大离线设备数量，这里根据需要自己修改
-#define OFFLINE_WATCHDOG_ENABLE           0                                     // 启用离线检测看门狗功能
+#define OFFLINE_WATCHDOG_ENABLE           1                                     // 启用离线检测看门狗功能
 #define OFFLINE_BEEP_ENABLE               1                                     // 开启离线蜂鸣器功能 
 #define OFFLINE_BEEP_PERIOD               2000                                  //注意这里的周期，由于在定时器(10ms)中,尽量保证整除
 #define OFFLINE_BEEP_ON_TIME              100                                   //这里BEEP_ON_TIME BEEP_OFF_TIME 共同影响

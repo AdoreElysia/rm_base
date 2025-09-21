@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 19:45:56
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-14 12:56:29
+ * @LastEditTime: 2025-09-21 10:15:46
  * @FilePath: /rm_base/modules/OFFLINE/offline.h
  * @Description: 
  */
@@ -11,6 +11,7 @@
 
 #include "modules_config.h"
 #include <stdint.h>
+#include "osal_def.h"
 #include "stdbool.h"
 
 #define OFFLINE_INVALID_INDEX  0xFF
@@ -53,6 +54,7 @@ typedef struct {
 typedef struct {
     OfflineDevice_t devices[MAX_OFFLINE_DEVICES];
     uint8_t device_count;
+    osal_mutex_t mutex;
 } OfflineManager_t;
 
 
@@ -63,10 +65,12 @@ typedef struct {
  */
 void offline_init();
 /**
- * @description: offline 线程运行函数，在线程里调用
+ * @description: 设置offline模块数据指针
+ * @param {OfflineManager_t*} manager
+ * @param {uint8_t*} beep_times
  * @return {*}
  */
-void offline_task_function();
+void offline_set_data_pointers(OfflineManager_t* manager, uint8_t* beep_times);
 /**
  * @description: 注册设备
  * @param {OfflineDeviceInit_t*} init
