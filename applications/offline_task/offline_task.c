@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-14 12:50:59
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-21 10:22:10
+ * @LastEditTime: 2025-09-26 23:06:21
  * @FilePath: /rm_base/applications/offline_task/offline_task.c
  * @Description: 
  */
@@ -23,7 +23,7 @@
 #endif
 
 #define log_tag  "offline_task"
-#include "log.h"
+#include "shell_log.h"
 
 static osal_thread_t offline_thread;
 OFFLINE_THREAD_STACK_SECTION static uint8_t offline_thread_stack[OFFLINE_THREAD_STACK_SIZE];

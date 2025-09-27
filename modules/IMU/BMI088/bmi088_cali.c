@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 15:04:31
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-13 22:47:03
+ * @LastEditTime: 2025-09-26 23:03:31
  * @FilePath: /rm_base/modules/IMU/BMI088/bmi088_cali.c
  * @Description: 
  */
@@ -15,11 +15,11 @@
 #include "math.h"
 
 #define log_tag "BMI088"
-#include "log.h"
+#include "shell_log.h"
 
 #include "modules_config.h"
 
-#if IMU_TYPE  == IMU_BMI088
+#if IMU_TYPE  == 1
 
 #define GxOFFSET -0.00601393497f
 #define GyOFFSET -0.00196841615f

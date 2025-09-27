@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-07 12:41:40
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-11 10:18:57
+ * @LastEditTime: 2025-09-26 23:02:51
  * @FilePath: /rm_base/BSP/UART/bsp_uart.c
  * @Description: 
  */
@@ -14,7 +14,7 @@
 #include <string.h>
 
 #define log_tag "BSP_UART"
-#include "log.h"
+#include "shell_log.h"
 
 static UART_Device registered_uart[UART_MAX_INSTANCE_NUM] = {0}; // 结构体数组
 static bool uart_used[UART_MAX_INSTANCE_NUM] = {false};         // 添加使用状态标记

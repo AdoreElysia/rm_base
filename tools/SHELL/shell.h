@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-04 12:51:36
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 22:06:31
+ * @LastEditTime: 2025-09-26 22:48:13
  * @FilePath: /rm_base/tools/SHELL/shell.h
  * @Description: 
  */
@@ -56,6 +56,12 @@ void shell_module_period_process();
  * @param ... 可变参数列表
  */
 void shell_module_printf(const char *fmt, ...);
+/**
+ * @brief Shell模块发送数据函数
+ * @param data 要发送的数据缓冲区
+ * @param len 要发送的数据长度
+ */
+void shell_module_send(uint8_t *data, uint16_t len);
 /**
  * @brief 注册自定义命令到Shell模块
  * @param name 命令名称

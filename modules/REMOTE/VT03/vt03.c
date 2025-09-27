@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:30:21
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-15 19:02:29
+ * @LastEditTime: 2025-09-26 23:05:43
  * @FilePath: /rm_base/modules/REMOTE/VT03/vt03.c
  * @Description: 
  */
@@ -14,7 +14,7 @@
 #include <string.h>
 
 #define log_tag "vt03"
-#include "log.h"
+#include "shell_log.h"
 
 #if defined (REMOTE_VT_SOURCE) && (REMOTE_VT_SOURCE == 2)
 

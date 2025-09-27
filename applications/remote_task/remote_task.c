@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 23:49:44
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-17 16:10:40
+ * @LastEditTime: 2025-09-26 23:06:29
  * @FilePath: /rm_base/applications/remote_task/remote_task.c
  * @Description: 
  */
@@ -16,7 +16,7 @@
 #ifdef REMOTE_MODULE
 
 #define log_tag  "remote_task"
-#include "log.h"
+#include "shell_log.h"
 
 static osal_thread_t remote_thread;
 REMOTE_THREAD_STACK_SECTION static uint8_t remote_thread_stack[REMOTE_THREAD_STACK_SIZE];

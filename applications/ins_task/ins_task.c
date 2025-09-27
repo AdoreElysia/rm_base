@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-14 13:43:30
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-17 16:05:42
+ * @LastEditTime: 2025-09-26 23:06:11
  * @FilePath: /rm_base/applications/ins_task/ins_task.c
  * @Description: 
  */
@@ -14,7 +14,7 @@
 #ifdef INS_MODULE
 
 #define log_tag  "ins_task"
-#include "log.h"
+#include "shell_log.h"
 
 static osal_thread_t INS_thread = {0};
 INS_THREAD_STACK_SECTION static uint8_t INS_thread_stack[INS_THREAD_STACK_SIZE] = {0};

@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-10 09:54:06
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 14:20:50
+ * @LastEditTime: 2025-09-27 12:55:19
  * @FilePath: /rm_base/CONFIG/tools_config.h
  * @Description: 
  */
@@ -20,17 +20,9 @@
 #define SHELL_RTT                    1                                    // 使用rtt作为shell通讯方式,当使能时,SHELL_COM无效
 #define SHELL_COM                    huart6                               // shell使用的通讯接口(uart)
 #define SHELL_BUFFER_SIZE            32                                   // shell缓冲区大小
-
-/* log 配置 */
-// 默认输出方式
+/* shell_log 配置 */
 #define LOG_OUTPUT_LEVEL             LOG_LEVEL_INFO                       // 日志的输出等级
 #define LOG_COLOR_ENABLE             1                                    // 启用彩色输出
 #define LOG_TIMSTAMP_ENABLE          1                                    // 启用时间戳 
-#if SHELL_ENABLE                                                          // 当shell_enable时默认使用shell输出
-#define LOG_OUTPUT_SHELL
-#else
-#define LOG_RTT                      1                                    // 是否使用rtt输出，0为使用uart输出          
-#define LOG_COM                      huart6                               // 使用的串口
-#endif
 
 #endif // _TOOLS_CONFIG_H_

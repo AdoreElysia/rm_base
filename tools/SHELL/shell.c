@@ -11,7 +11,7 @@
 
 
 #define log_tag "shell"
-#include "log.h"
+#include "shell_log.h"
 
 // 静态变量声明
 static Shell_Module_t *shell_module = NULL;
@@ -259,6 +259,23 @@ void shell_module_printf(const char *fmt, ...) {
     } else {
         if (shell_module->uart_dev != NULL) {
             BSP_UART_Send(shell_module->uart_dev, (uint8_t *)print_buf, len);
+        }
+    }
+
+    // 释放互斥锁
+    osal_mutex_unlock(&shell_module->mutex);
+}
+
+void shell_module_send(uint8_t *data, uint16_t len){
+    // 互斥锁
+    osal_mutex_lock(&shell_module->mutex, TX_WAIT_FOREVER);
+
+    // 输出到RTT或UART
+    if (shell_module->use_rtt) {
+        SEGGER_RTT_WriteNoLock(0, (uint8_t *)data, len);
+    } else {
+        if (shell_module->uart_dev != NULL) {
+            BSP_UART_Send(shell_module->uart_dev, (uint8_t *)data, len);
         }
     }
 

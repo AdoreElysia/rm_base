@@ -25,8 +25,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#define LOG_TAG "app"
-#include "log.h"
+#define log_tag "app"
+#include "shell_log.h"
 #include "osal_def.h"
 #include <stdint.h>
 #include <string.h>

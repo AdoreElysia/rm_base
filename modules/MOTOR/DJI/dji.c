@@ -7,8 +7,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#define LOG_TAG              "dji"
-#include "log.h"
+#define log_tag              "dji"
+#include "shell_log.h"
 
 #define ECD_ANGLE_COEF_DJI 0.043945f // (360/8192),将编码器值转化为角度制
 

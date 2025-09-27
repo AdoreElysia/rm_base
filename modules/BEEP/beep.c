@@ -2,14 +2,13 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-08-06 10:31:16
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-17 16:25:05
+ * @LastEditTime: 2025-09-26 23:03:09
  * @FilePath: /rm_base/modules/BEEP/beep.c
  * @Description: 蜂鸣器模块，基于BSP_PWM组件实现
  */
 #include "beep.h"
 #include "bsp_pwm.h"
 #include "bsp_dwt.h"
-#include "log.h"
 #include "osal_def.h"
 #include "tim.h"
 #include <stdint.h>

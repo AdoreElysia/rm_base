@@ -7,12 +7,20 @@ Shell 是一个基于 OSAL 的命令行接口工具，提供了统一的接口�
 ## 特性
 
 - 支持命令行交互界面
+
 - 支持 ANSI 转义序列（清屏等）
+
 - 双缓冲区机制提高接收效率
+
 - 基于 OSAL 的线程安全机制
+
 - 支持多个命令动态注册
+
 - 支持 RTT 和 UART 两种通信方式
+
 - 分层设计，模块化实现
+  
+  支持日志输出功能
   
   ## 数据结构
   
@@ -79,6 +87,10 @@ Shell 是一个基于 OSAL 的命令行接口工具，提供了统一的接口�
   osal_status_t shell_module_register_cmd(const char *name, shell_cmd_func_t func, const char *description);
   ```
   
+  ```c
+  void shell_module_send(uint8_t *data, uint16_t len);
+  ```
+  
   ## 内置命令
   
   ### help 命令
@@ -98,6 +110,29 @@ Shell 是一个基于 OSAL 的命令行接口工具，提供了统一的接口�
   显示系统信息，包括线程、定时器、互斥量、信号量、事件标志组、队列、字节池和块池等信息。
   
   > 目前只写了threadx的
+  
+  ## 日志功能
+  
+  Shell提供了一套完整的日志系统，支持多种日志级别和格式化输出。
+  
+  ### 日志级别
+  
+  日志系统支持以下6种日志级别：
+  
+  - VERBOSE - 详细信息
+  - DEBUG - 调试信息
+  - INFO - 一般信息
+  - WARN - 警告信息
+  - ERROR - 错误信息
+  - ASSERT - 断言信息
+  
+  ### 配置参数
+  
+  ```c
+  #define LOG_OUTPUT_LEVEL             LOG_LEVEL_INFO                       // 日志的输出等级
+  #define LOG_COLOR_ENABLE             1                                    // 启用彩色输出
+  #define LOG_TIMSTAMP_ENABLE          1                                    // 启用时间戳 
+  ```
   
   ## 使用示例
   
@@ -147,6 +182,32 @@ Shell 是一个基于 OSAL 的命令行接口工具，提供了统一的接口�
   Received parameter: test_parameter
   ```
   
+  ### 日志使用
+  
+  ```c
+  // 在文件开头定义log_tag（可选，默认为"default"）
+  #define log_tag "mymodule"
+  
+  #include "shell_log.h"
+  
+  // 使用不同级别的日志宏
+  LOG_VERBOSE("详细信息");
+  LOG_DEBUG("调试信息: value=%d", value);
+  LOG_INFO("一般信息");
+  LOG_WARN("警告信息");
+  LOG_ERROR("错误信息: %s", error_msg);
+  LOG_ASSERT("断言信息");
+  ```
+  
+  #### 特性
+  
+  1. **自动换行**：所有日志都会自动添加`\r\n`换行符
+  2. **彩色输出**：支持ANSI颜色代码，不同级别日志以不同颜色显示
+  3. **时间戳**：可选的时间戳功能，显示日志输出的精确时间
+  4. **标签支持**：可为每个模块定义标签，便于识别日志来源
+  5. **递归保护**：防止在日志输出过程中再次调用日志函数导致死锁
+  6. **线程安全**：基于shell模块的互斥锁机制保证线程安全
+  
   #### 工作原理
   
   ### 分层架构
@@ -175,6 +236,8 @@ Shell 是一个基于 OSAL 的命令行接口工具，提供了统一的接口�
   4. **命令数量**：动态注册的命令数量不能超过SHELL_MAX_DYNAMIC_COMMANDS定义的数量。
   
   5. **通信接口**：可以通过配置选择使用UART或RTT作为通信接口。
+  
+  6. **日志级别**：合理设置日志输出级别，避免输出过多调试信息影响系统性能。
   
   ## 错误处理
   

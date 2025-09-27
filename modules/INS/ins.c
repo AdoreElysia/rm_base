@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-14 08:49:07
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-17 16:05:28
+ * @LastEditTime: 2025-09-26 23:04:27
  * @FilePath: /rm_base/modules/INS/ins.c
  * @Description: INS姿态解算实现
  */
@@ -20,7 +20,7 @@
 #include <stdint.h>
 
 #define log_tag  "ins"
-#include "log.h"
+#include "shell_log.h"
 
 // 常量定义
 #define INS_ACCEL_LPF_COEF 0.0085f  // 加速度低通滤波系数

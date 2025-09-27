@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-16 10:10:42
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-17 16:11:54
+ * @LastEditTime: 2025-09-26 23:03:19
  * @FilePath: /rm_base/modules/DM_IMU/dm_imu.c
  * @Description: 
  */
@@ -18,7 +18,7 @@
 #ifdef DM_IMU_MODULE
 
 #define log_tag  "dm_imu"
-#include "log.h"
+#include "shell_log.h"
 
 #define ACCEL_CAN_MAX (58.8f)
 #define ACCEL_CAN_MIN	(-58.8f)

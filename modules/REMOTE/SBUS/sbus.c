@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:29:38
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-16 08:19:56
+ * @LastEditTime: 2025-09-26 23:05:29
  * @FilePath: /rm_base/modules/REMOTE/SBUS/sbus.c
  * @Description: 
  */
@@ -15,7 +15,7 @@
 #include "remote_data.h"
 
 #define log_tag "sbus"
-#include "log.h"
+#include "shell_log.h"
 
 #define SBUS_CHX_BIAS ((uint16_t)1024)
 #define SBUS_CHX_UP   ((uint16_t)240)

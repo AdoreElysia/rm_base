@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:18:31
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-18 10:59:01
+ * @LastEditTime: 2025-09-26 23:05:49
  * @FilePath: /rm_base/modules/REMOTE/remote.c
  * @Description: 
  */
@@ -15,7 +15,7 @@
 #ifdef REMOTE_MODULE
 
 #define log_tag "remote"
-#include "log.h"
+#include "shell_log.h"
 
 static remote_instance_t remote_instance;
 

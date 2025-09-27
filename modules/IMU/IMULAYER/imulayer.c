@@ -2,7 +2,7 @@
  * @Author: your name
  * @Date: 2025-09-13 10:54:50
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-17 20:42:51
+ * @LastEditTime: 2025-09-26 23:04:05
  * @FilePath: /rm_base/modules/IMU/IMULAYER/imulayer.c
  * @Description: IMU兼容层实现
  */
@@ -12,7 +12,7 @@
 #include "osal_def.h"
 #include <string.h>
 
-#if IMU_TYPE == IMU_BMI088
+#if IMU_TYPE == 1
 #include "BMI088/bmi088.h"
 #endif
 

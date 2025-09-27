@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 19:45:50
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 14:21:39
+ * @LastEditTime: 2025-09-26 23:05:11
  * @FilePath: /rm_base/modules/OFFLINE/offline.c
  * @Description: 
  */
@@ -17,7 +17,7 @@
 #include "shell.h"
 
 #define log_tag  "offline"
-#include "log.h"
+#include "shell_log.h"
 
 // 静态变量指针，指向应用层管理的数据
 static OfflineManager_t* offline_manager_ptr = NULL;

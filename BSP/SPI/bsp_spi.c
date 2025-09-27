@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #define log_tag "BSP_SPI"
-#include "log.h"
+#include "shell_log.h"
 
 // SPI总线管理器数组
 static SPI_Bus_Manager spi_buses[SPI_BUS_NUM];

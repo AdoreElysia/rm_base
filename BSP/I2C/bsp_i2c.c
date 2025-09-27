@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-08 10:44:23
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-11 13:03:34
+ * @LastEditTime: 2025-09-26 23:02:28
  * @FilePath: /rm_base/BSP/I2C/bsp_i2c.c
  * @Description: 
  */
@@ -12,7 +12,7 @@
 #include <string.h>
 
 #define log_tag "BSP_I2C"
-#include "log.h"
+#include "shell_log.h"
 
 static I2C_Bus_Manager i2c_buses[I2C_BUS_NUM] = {0};
 

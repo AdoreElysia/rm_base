@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:29:57
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-15 12:36:31
+ * @LastEditTime: 2025-09-26 23:05:21
  * @FilePath: /rm_base/modules/REMOTE/DT7/dt7.c
  * @Description: 
  */
@@ -13,7 +13,7 @@
 #include <string.h>
 
 #define log_tag "dt7"
-#include "log.h"
+#include "shell_log.h"
 
 
 #define DT7_CH_VALUE_MIN ((uint16_t)364)

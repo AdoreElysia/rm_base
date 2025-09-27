@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-17 16:39:19
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 22:08:34
+ * @LastEditTime: 2025-09-26 23:01:16
  * @FilePath: /rm_base/applications/shell_task/shell_task.c
  * @Description: 
  */
@@ -15,7 +15,7 @@
 #ifdef SHELL_MODULE
 
 #define log_tag  "shell_task"
-#include "log.h"
+#include "shell_log.h"
 
 static Shell_Module_t shell_module;
 static osal_thread_t shell_thread;

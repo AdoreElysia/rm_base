@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-08 08:31:35
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-11 10:42:05
+ * @LastEditTime: 2025-09-26 23:02:35
  * @FilePath: /rm_base/BSP/PWM/bsp_pwm.c
  * @Description: 
  */
@@ -10,7 +10,7 @@
 
 // 添加日志支持
 #define log_tag "PWM"
-#include "log.h"
+#include "shell_log.h"
 
 static PWM_Device pwm_devices[MAX_PWM_DEVICES];
 static uint8_t device_count = 0;

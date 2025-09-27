@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 11:11:09
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-17 15:56:23
+ * @LastEditTime: 2025-09-26 23:04:38
  * @FilePath: /rm_base/modules/IST8310/ist8310.c
  * @Description: 
  */
@@ -18,7 +18,7 @@
 #include <string.h>
 
 #define log_tag "IST8310"
-#include "log.h"
+#include "shell_log.h"
 
 static IST8310_Instance_t ist8310_instance ={0}; // 用于存储IST8310实例
 

@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 13:43:09
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-17 16:22:24
+ * @LastEditTime: 2025-09-26 23:03:41
  * @FilePath: /rm_base/modules/IMU/BMI088/bmi088.c
  * @Description: 
  */
@@ -18,7 +18,7 @@
 #include "modules_config.h"
 
 #define log_tag "BMI088"
-#include "log.h"
+#include "shell_log.h"
 
 #if IMU_TYPE  == 1
 
