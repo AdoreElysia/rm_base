@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 19:45:56
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-21 10:15:46
+ * @LastEditTime: 2025-09-27 22:57:16
  * @FilePath: /rm_base/modules/OFFLINE/offline.h
  * @Description: 
  */
@@ -55,56 +55,57 @@ typedef struct {
     OfflineDevice_t devices[MAX_OFFLINE_DEVICES];
     uint8_t device_count;
     osal_mutex_t mutex;
+    bool initialized;                  // 初始化状态
+    uint8_t* current_beep_times_ptr;   // 当前蜂鸣次数指针
 } OfflineManager_t;
-
 
 // 函数声明
 /**
- * @description: offline模块的初始化
- * @return {*}
- */
-void offline_init();
-/**
- * @description: 设置offline模块数据指针
+ * @description: 离线模块初始化
  * @param {OfflineManager_t*} manager
  * @param {uint8_t*} beep_times
- * @return {*}
+ * @return {osal_status_t}，OSAL_SCUCCESS表示成功，否则为失败
  */
-void offline_set_data_pointers(OfflineManager_t* manager, uint8_t* beep_times);
+osal_status_t offline_module_init(OfflineManager_t* manager, uint8_t* beep_times);
 /**
  * @description: 注册设备
  * @param {OfflineDeviceInit_t*} init
  * @return 成功返回对应的index，否则则会返回OFFLINE_INVALID_INDEX
  */
-uint8_t offline_device_register(const OfflineDeviceInit_t* init);
+uint8_t offline_module_device_register(const OfflineDeviceInit_t* init);
 /**
  * @description: 更新对应的设备离线状态
  * @param {uint8_t} device_index
  * @return {*}
  */
-void offline_device_update(uint8_t device_index);
+void offline_module_device_update(uint8_t device_index);
 /**
  * @description: 开启对应设备离线检测
  * @param {uint8_t} device_index
  * @return {*}
  */
-void offline_device_enable(uint8_t device_index);
+void offline_module_device_enable(uint8_t device_index);
 /**
  * @description: 关闭对应设备的离线检测
  * @param {uint8_t} device_index
  * @return {*}
  */
-void offline_device_disable(uint8_t device_index);
+void offline_module_device_disable(uint8_t device_index);
 /**
  * @description: 获取对应设备的离线状态
  * @param {uint8_t} device_index
  * @return 设备在线则会返回STATE_ONLINE，否则返回STATE_OFFLINE
  */
-uint8_t get_device_status(uint8_t device_index);
+uint8_t offline_module_get_device_status(uint8_t device_index);
 /**
  * @description: 获取所有注册设备的状态和
  * @return 所有设备在线返回STATE_ONLINE，否则返回STATE_OFFLINE
  */
-uint8_t get_system_status(void);
+uint8_t offline_module_get_system_status(void);
+/**
+ * @description: 离线模块周期性处理函数
+ * @return {*}
+ */
+void offline_module_period_process(void);
 
 #endif // _OFFLINE_H_

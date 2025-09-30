@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:30:21
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 23:05:43
+ * @LastEditTime: 2025-09-30 13:40:28
  * @FilePath: /rm_base/modules/REMOTE/VT03/vt03.c
  * @Description: 
  */
@@ -47,7 +47,7 @@ osal_status_t vt03_init(VT03_Instance_t *vt03_instance)
         .beep_times = 0,
         .enable = OFFLINE_ENABLE,
     };
-    vt03_instance->offline_index = offline_device_register(&offline_init);
+    vt03_instance->offline_index = offline_module_device_register(&offline_init);
     if (vt03_instance->offline_index == OFFLINE_INVALID_INDEX)
     {
         LOG_ERROR("offline device register error");
@@ -136,7 +136,9 @@ void vt03_decode(VT03_Instance_t *vt03_instance, uint8_t *buf){
             }
 
             // 更新键盘数据
-            vt03_instance->vt03_remote_data.key_state.key_code = buf[17] | (buf[18] << 8);          
+            vt03_instance->vt03_remote_data.key_state.key_code = buf[17] | (buf[18] << 8);     
+            
+            offline_module_device_update(vt03_instance->offline_index);
         }
     }
 }

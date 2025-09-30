@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:29:38
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 23:05:29
+ * @LastEditTime: 2025-09-30 13:37:19
  * @FilePath: /rm_base/modules/REMOTE/SBUS/sbus.c
  * @Description: 
  */
@@ -47,7 +47,7 @@ osal_status_t sbus_init(SBUS_Instance_t *sbus_instance){
         .beep_times = 0,
         .enable = OFFLINE_ENABLE,
     };
-    sbus_instance->offline_index = offline_device_register(&offline_init);
+    sbus_instance->offline_index = offline_module_device_register(&offline_init);
     if (sbus_instance->offline_index == OFFLINE_INVALID_INDEX)
     {
         LOG_ERROR("offline device register error");
@@ -123,7 +123,7 @@ void sbus_decode(SBUS_Instance_t *sbus_instance,uint8_t *buf){
 
         if (sbus_instance->SBUS_CH.ConnectState == 0x00)
         {
-            offline_device_update(sbus_instance->offline_index);
+            offline_module_device_update(sbus_instance->offline_index);
         }
     }
 }

@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:29:57
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 23:05:21
+ * @LastEditTime: 2025-09-30 13:40:20
  * @FilePath: /rm_base/modules/REMOTE/DT7/dt7.c
  * @Description: 
  */
@@ -50,7 +50,7 @@ osal_status_t dt7_init(DT7_Instance_t *dt7_instance){
         .beep_times = 0,
         .enable = OFFLINE_ENABLE,
     };
-    dt7_instance->offline_index = offline_device_register(&offline_init);
+    dt7_instance->offline_index = offline_module_device_register(&offline_init);
     if (dt7_instance->offline_index == OFFLINE_INVALID_INDEX)
     {
         LOG_ERROR("offline device register error");
@@ -133,7 +133,7 @@ void dt7_decode(DT7_Instance_t *dt7_instance, uint8_t *buf){
     dt7_instance->dt7_input.wheel = (buf[16] | buf[17] << 8) - DT7_CH_VALUE_OFFSET;
     if(abs(dt7_instance->dt7_input.wheel) <= REMOTE_DEAD_ZONE*10) dt7_instance->dt7_input.wheel = 0;
 
-    offline_device_update(dt7_instance->offline_index);
+    offline_module_device_update(dt7_instance->offline_index);
 }
 
 enum channel_state get_dt7_sw_state(DT7_Instance_t *dt7_instance, uint8_t sw_index)

@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 19:45:50
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 23:05:11
+ * @LastEditTime: 2025-09-30 14:10:20
  * @FilePath: /rm_base/modules/OFFLINE/offline.c
  * @Description: 
  */
@@ -14,39 +14,40 @@
 #include "rgb.h"
 #include <stdint.h>
 #include <string.h>
-#include "shell.h"
 
 #define log_tag  "offline"
 #include "shell_log.h"
 
 // 静态变量指针，指向应用层管理的数据
 static OfflineManager_t* offline_manager_ptr = NULL;
-static uint8_t* current_beep_times_ptr = NULL;
 // 函数声明
 static void beep_ctrl_times(ULONG timer);
 
+osal_status_t offline_module_init(OfflineManager_t* manager, uint8_t* beep_times) {
+    if (manager == NULL) {return OSAL_ERROR;}
 
-// 设置静态变量指针
-void offline_set_data_pointers(OfflineManager_t* manager, uint8_t* beep_times) {
+    // 保存管理器指针
     offline_manager_ptr = manager;
-    current_beep_times_ptr = beep_times;
-}
+    offline_manager_ptr->current_beep_times_ptr = beep_times;
 
-void offline_init(void)
-{
+    // 初始化功能相关配置
+    offline_manager_ptr->initialized = true;
+    offline_manager_ptr->device_count = 0;
+
     beep_init(2000, 10, beep_ctrl_times);
-    
 
-    LOG_INFO("Offline init successfully.");
+    LOG_INFO("Offline module init successfully.");
+    
+    return OSAL_SUCCESS;
 }
 
-uint8_t offline_device_register(const OfflineDeviceInit_t* init)
+
+uint8_t offline_module_device_register(const OfflineDeviceInit_t* init)
 {
-    if (offline_manager_ptr == NULL || init == NULL || offline_manager_ptr->device_count >= MAX_OFFLINE_DEVICES) {
+    if (offline_manager_ptr == NULL || init == NULL || offline_manager_ptr->device_count >= MAX_OFFLINE_DEVICES || offline_manager_ptr->initialized == false) {
         return OFFLINE_INVALID_INDEX;
     }
 
-    
     osal_mutex_lock(&offline_manager_ptr->mutex, OSAL_WAIT_FOREVER);
     
     uint8_t index = offline_manager_ptr->device_count;
@@ -71,34 +72,34 @@ uint8_t offline_device_register(const OfflineDeviceInit_t* init)
     return index;
 }
 
-void offline_device_update(uint8_t device_index)
+void offline_module_device_update(uint8_t device_index)
 {
-    if (offline_manager_ptr != NULL) {
+    if (offline_manager_ptr != NULL && offline_manager_ptr->initialized == true) {
         if (device_index < offline_manager_ptr->device_count) {
             offline_manager_ptr->devices[device_index].last_time = tx_time_get();
         }   
     }
 }
 
-void offline_device_enable(uint8_t device_index)
+void offline_module_device_enable(uint8_t device_index)
 {
-    if (offline_manager_ptr != NULL) {
+    if (offline_manager_ptr != NULL && offline_manager_ptr->initialized == true) {
         if (device_index < offline_manager_ptr->device_count) {
             offline_manager_ptr->devices[device_index].enable = OFFLINE_ENABLE;
         }
     }
 }
 
-void offline_device_disable(uint8_t device_index)
+void offline_module_device_disable(uint8_t device_index)
 {
-    if (offline_manager_ptr != NULL) {
+    if (offline_manager_ptr != NULL && offline_manager_ptr->initialized == true) {
         if (device_index < offline_manager_ptr->device_count) {
             offline_manager_ptr->devices[device_index].enable = OFFLINE_DISABLE;
         }
     }
 }
-uint8_t get_device_status(uint8_t device_index){
-    if (offline_manager_ptr != NULL) {
+uint8_t offline_module_get_device_status(uint8_t device_index){
+    if (offline_manager_ptr != NULL && offline_manager_ptr->initialized == true) {
         if(device_index < offline_manager_ptr->device_count){
             if (offline_manager_ptr->devices[device_index].enable == OFFLINE_ENABLE)
             {
@@ -112,8 +113,8 @@ uint8_t get_device_status(uint8_t device_index){
     return STATE_OFFLINE;
 }
 
-uint8_t get_system_status(void){
-    if (offline_manager_ptr == NULL) {
+uint8_t offline_module_get_system_status(void){
+    if (offline_manager_ptr == NULL || offline_manager_ptr->initialized == false) {
         return STATE_OFFLINE;
     }else {
         uint8_t status = 0;
@@ -126,16 +127,17 @@ uint8_t get_system_status(void){
     }
 }
 
+
 void beep_ctrl_times(ULONG timer)
 {
     static uint32_t beep_period_start_time;
     static uint32_t beep_cycle_start_time;
     static uint8_t remaining_beep_cycles;
 
-    if (current_beep_times_ptr != NULL) {
+    if (offline_manager_ptr != NULL && offline_manager_ptr->current_beep_times_ptr != NULL) {
         if (DWT_GetTimeline_ms() - beep_period_start_time > OFFLINE_BEEP_PERIOD)
         {
-            remaining_beep_cycles = *current_beep_times_ptr;
+            remaining_beep_cycles = *(offline_manager_ptr->current_beep_times_ptr);
             beep_period_start_time = DWT_GetTimeline_ms();
             beep_cycle_start_time = DWT_GetTimeline_ms();
         }

@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:30:03
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 23:05:35
+ * @LastEditTime: 2025-09-30 13:37:37
  * @FilePath: /rm_base/modules/REMOTE/VT02/vt02.c
  * @Description: 
  */
@@ -43,7 +43,7 @@ osal_status_t vt02_init(VT02_Instance_t *vt02_instance)
         .beep_times = 0,
         .enable = OFFLINE_ENABLE,
     };
-    vt02_instance->offline_index = offline_device_register(&offline_init);
+    vt02_instance->offline_index = offline_module_device_register(&offline_init);
     if (vt02_instance->offline_index == OFFLINE_INVALID_INDEX)
     {
         LOG_ERROR("offline device register error");
@@ -93,7 +93,7 @@ void vt02_decode(VT02_Instance_t *vt02_instance, uint8_t *buf)
     // 键盘
     vt02_instance->vt02_remote_data.key_state.key_code = (data_ptr[9] << 8) | data_ptr[8];
 
-    offline_device_update(vt02_instance->offline_index);
+    offline_module_device_update(vt02_instance->offline_index);
 }
 #else  
 osal_status_t vt02_init(VT02_Instance_t *vt02_instance)

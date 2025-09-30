@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-16 10:10:42
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 23:03:19
+ * @LastEditTime: 2025-09-30 13:39:53
  * @FilePath: /rm_base/modules/DM_IMU/dm_imu.c
  * @Description: 
  */
@@ -118,7 +118,7 @@ void IMU_UpdateQuaternion(DM_IMU_Instance_t *ist)
 
 void IMU_UpdateData(DM_IMU_Instance_t *ist)
 {
-    offline_device_update(ist->offline_index);
+    offline_module_device_update(ist->offline_index);
     switch(ist->can_device->rx_buff[0])
     {
         case DM_RID_ACCEL:
@@ -164,7 +164,7 @@ osal_status_t dm_imu_init(void){
         .beep_times = 1,
         .enable = OFFLINE_ENABLE,
     };
-    dm_imu_instance.offline_index = offline_device_register(&offline_init);
+    dm_imu_instance.offline_index = offline_module_device_register(&offline_init);
     if (dm_imu_instance.offline_index == OFFLINE_INVALID_INDEX)
     {
         LOG_ERROR("offline_device_register error");

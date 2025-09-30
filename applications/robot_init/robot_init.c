@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-13 10:14:45
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 23:06:36
+ * @LastEditTime: 2025-09-27 23:13:37
  * @FilePath: /rm_base/applications/robot_init/robot_init.c
  * @Description: 
  */
@@ -34,7 +34,7 @@ void app_init(){
   remote_init();
   dm_imu_init();
   ins_task_init();
-  remote_task_init();
+  remote_task_init(); 
   dm_imu_task_init();
 }
 
