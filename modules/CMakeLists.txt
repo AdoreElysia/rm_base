@@ -24,6 +24,7 @@ add_library(${name} STATIC
     REMOTE/DT7/dt7.c
     REMOTE/VT02/vt02.c
     REMOTE/VT03/vt03.c
+    REMOTE/remote_shellcmd.c
     DM_IMU/dm_imu.c
     MOTOR/DJI/dji.c
 )

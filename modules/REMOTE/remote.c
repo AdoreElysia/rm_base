@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:18:31
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-01 19:13:05
+ * @LastEditTime: 2025-10-01 21:48:10
  * @FilePath: /rm_base/modules/REMOTE/remote.c
  * @Description: 
  */
@@ -19,7 +19,7 @@ static remote_instance_t *remote_instance = NULL;
 
 osal_status_t remote_init(remote_instance_t *remote)
 {
-    if (remote_instance == NULL)
+    if (remote == NULL)
     {
         return OSAL_ERROR;
     }
