@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-18 11:05:25
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-20 11:26:01
- * @FilePath: /rm_base/modules/MOTOR/DJI/dji.h
+ * @LastEditTime: 2025-10-03 10:02:19
+ * @FilePath: \rm_base\modules\MOTOR\DJI\dji.h
  * @Description:  
  */
 #ifndef _DJI_H_
@@ -18,9 +18,9 @@ typedef struct
     uint16_t last_ecd;        // 上一次读取的编码器值
     uint16_t ecd;             // 0-8191,刻度总共有8192格
     float angle_single_round; // 单圈角度
-    float speed_rpm;          // 转速
-    float speed_aps;          // 角速度,单位为:度/秒
-    int16_t real_current;     // 实际电流
+    float speed_rpm;          // 转速，单位为:转/分钟
+    float speed_rad;          // 角速度,单位为:弧度/秒
+    int16_t real_current;     // 实际电流 
     uint8_t temperature;      // 温度 Celsius
 
     float total_angle;        // 总角度,注意方向
@@ -38,7 +38,6 @@ typedef struct
     Motor_Working_Type_e stop_flag;         // 启停标志
     uint8_t offline_index;                  // 离线检测索引
     Can_Device *can_device;                 // CAN设备
-    uint8_t idx;                            // 在电机数组中的索引
 } DJIMotor_t;
 
 /**
@@ -88,10 +87,16 @@ void DJIMotorOuterLoop(DJIMotor_t *motor, Closeloop_Type_e outer_loop, LQR_Init_
  */
 void DJIMotorControl(void);
 /**
- * @description: 解码DJI电机数据
- * @param {uint8_t} dji_idx，电机索引
+ * @description: DJI电机数据解析
+ * @param {DJIMotor_t} *motor，电机指针
  * @return {*}
  */
-void DecodeDJIMotor(uint8_t dji_idx);
+void DecodeDJIMotor(DJIMotor_t *motor);
+/**
+ * @description: DJI电机列表初始化
+ * @param {DJIMotor_t} *motor_list，电机列表指针
+ * @return {*}
+ */
+void DJIMotorListInit(DJIMotor_t *motor_list);
 
 #endif // _DJI_H_

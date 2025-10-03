@@ -12,10 +12,8 @@
 
 #define ECD_ANGLE_COEF_DJI 0.043945f // (360/8192),将编码器值转化为角度制
 
-#if (MOTOR_MODULE_USE & MOTOR_DJI)
+static DJIMotor_t *dji_motor_list = NULL; 
 
-static uint8_t idx = 0; // register idx,是该文件的全局电机索引,在注册时使用
-static DJIMotor_t dji_motor_list[DJI_MOTOR_CNT] = {0}; // 会在control任务中遍历该数组进行pid计算
 /**
  * @brief 由于DJI电机发送以四个一组的形式进行,故对其进行特殊处理,
  *        该变量将在 DJIMotorControl() 中使用,分组在 MotorSenderGrouping()中进行
@@ -78,9 +76,9 @@ static void MotorSenderGrouping(DJIMotor_t *motor, Can_Device_Init_Config_s *con
         motor->sender_group = motor_grouping;
 
 
-        for (size_t i = 0; i < idx; ++i)
+        for (size_t i = 0; i < DJI_MOTOR_CNT; ++i)
         {
-            if (dji_motor_list[i].can_device->can_handle == config->can_handle && dji_motor_list[i].can_device->rx_id == config->rx_id)
+            if (dji_motor_list[i].can_device && dji_motor_list[i].can_device->can_handle == config->can_handle && dji_motor_list[i].can_device->rx_id == config->rx_id)
             {
                 // 6020的id 1-4和2006/3508的id 5-8会发生冲突(若有注册,即1!5,2!6,3!7,4!8) (1!5!,LTC! (((不是)
                 LOG_ERROR("ID crash,id [%d], can_bus [%s]", config->rx_id, (config->can_handle == &hcan1 ? "can1" : "can2"));
@@ -105,9 +103,9 @@ static void MotorSenderGrouping(DJIMotor_t *motor, Can_Device_Init_Config_s *con
         sender_enable_flag[motor_grouping] = 1; // 只要有电机注册到这个分组,置为1;在发送函数中会通过此标志判断是否有电机注册
         motor->message_num = motor_send_num;
         motor->sender_group = motor_grouping;
-        for (size_t i = 0; i < idx; ++i)
+        for (size_t i = 0; i < DJI_MOTOR_CNT; ++i)
         {
-            if (dji_motor_list[i].can_device->can_handle == config->can_handle && dji_motor_list[i].can_device->rx_id == config->rx_id)
+            if (dji_motor_list[i].can_device && dji_motor_list[i].can_device->can_handle == config->can_handle && dji_motor_list[i].can_device->rx_id == config->rx_id)
             {
                 LOG_ERROR("ID crash,id [%d], can_bus [%s]", config->rx_id, (config->can_handle == &hcan1 ? "can1" : "can2"));
             }
@@ -130,9 +128,9 @@ static void MotorSenderGrouping(DJIMotor_t *motor, Can_Device_Init_Config_s *con
         sender_enable_flag[motor_grouping] = 1; // 只要有电机注册到这个分组,置为1;在发送函数中会通过此标志判断是否有电机注册
         motor->message_num = motor_send_num;
         motor->sender_group = motor_grouping;
-        for (size_t i = 0; i < idx; ++i)
+        for (size_t i = 0; i < DJI_MOTOR_CNT; ++i)
         {
-            if (dji_motor_list[i].can_device->can_handle == config->can_handle && dji_motor_list[i].can_device->rx_id == config->rx_id)
+            if (dji_motor_list[i].can_device && dji_motor_list[i].can_device->can_handle == config->can_handle && dji_motor_list[i].can_device->rx_id == config->rx_id)
             {
                 LOG_ERROR("ID crash,id [%d], can_bus [%s]", config->rx_id, (config->can_handle == &hcan1 ? "can1" : "can2"));
             }
@@ -143,39 +141,51 @@ static void MotorSenderGrouping(DJIMotor_t *motor, Can_Device_Init_Config_s *con
     }
 }
 
-void DecodeDJIMotor(uint8_t dji_idx)
+void DecodeDJIMotor(DJIMotor_t *motor)
 {
-    if (dji_idx >= DJI_MOTOR_CNT || dji_motor_list[dji_idx].can_device == NULL ) {return;}
+    if (motor == NULL || motor->can_device == NULL ) {return;}
     // 更新电机数据
-    dji_motor_list[dji_idx].measure.last_ecd           = dji_motor_list[dji_idx].measure.ecd;
-    dji_motor_list[dji_idx].measure.ecd                = ((uint16_t)dji_motor_list[dji_idx].can_device->rx_buff[0] << 8) | dji_motor_list[dji_idx].can_device->rx_buff[1];
-    dji_motor_list[dji_idx].measure.angle_single_round = ECD_ANGLE_COEF_DJI * (float)dji_motor_list[dji_idx].measure.ecd;         
-    dji_motor_list[dji_idx].measure.speed_rpm          = (int16_t)(dji_motor_list[dji_idx].can_device->rx_buff[2] << 8 | dji_motor_list[dji_idx].can_device->rx_buff[3]);;
-    dji_motor_list[dji_idx].measure.speed_aps          = RPM_2_ANGLE_PER_SEC * (int16_t)(dji_motor_list[dji_idx].can_device->rx_buff[2] << 8 | dji_motor_list[dji_idx].can_device->rx_buff[3]);;
-    dji_motor_list[dji_idx].measure.real_current       = (int16_t)(dji_motor_list[dji_idx].can_device->rx_buff[4] << 8 | dji_motor_list[dji_idx].can_device->rx_buff[5]);
-    dji_motor_list[dji_idx].measure.temperature        = dji_motor_list[dji_idx].can_device->rx_buff[6];
+    motor->measure.last_ecd           = motor->measure.ecd;
+    motor->measure.ecd                = ((uint16_t)motor->can_device->rx_buff[0] << 8) | motor->can_device->rx_buff[1];
+    motor->measure.angle_single_round = ECD_ANGLE_COEF_DJI * (float)motor->measure.ecd;         
+    motor->measure.speed_rpm          = (int16_t)(motor->can_device->rx_buff[2] << 8 | motor->can_device->rx_buff[3]);
+    motor->measure.speed_rad          = RPM_2_RAD_PER_SEC * (int16_t)(motor->can_device->rx_buff[2] << 8 | motor->can_device->rx_buff[3]);
+    motor->measure.real_current       = (int16_t)(motor->can_device->rx_buff[4] << 8 | motor->can_device->rx_buff[5]);
+    motor->measure.temperature        = motor->can_device->rx_buff[6];
     // 多圈角度计算
-    int16_t delta_ecd = dji_motor_list[dji_idx].measure.ecd - dji_motor_list[dji_idx].measure.last_ecd;
-    if (delta_ecd > 4096) {dji_motor_list[dji_idx].measure.total_round--;} 
-    else if (delta_ecd < -4096) {dji_motor_list[dji_idx].measure.total_round++;}
-    dji_motor_list[dji_idx].measure.total_angle = dji_motor_list[dji_idx].measure.total_round * 360.0f + dji_motor_list[dji_idx].measure.angle_single_round;
+    int16_t delta_ecd =motor->measure.ecd - motor->measure.last_ecd;
+    if (delta_ecd > 4096) {motor->measure.total_round--;} 
+    else if (delta_ecd < -4096) {motor->measure.total_round++;}
+    motor->measure.total_angle =motor->measure.total_round * 360.0f + motor->measure.angle_single_round;
     // 更新在线状态
-    offline_module_device_update(dji_motor_list[dji_idx].offline_index);
+    offline_module_device_update(motor->offline_index);
 }
 
  
 // 电机初始化,返回一个电机实例
 DJIMotor_t *DJIMotorInit(Motor_Init_Config_s *config)
 {
-    // 检查索引是否超出数组范围
-    if (idx >= DJI_MOTOR_CNT) {
-        LOG_ERROR("DJI motor count exceeds maximum limit\n");
+    // 检查dji_motor_list是否已初始化
+    if (dji_motor_list == NULL) {
+        LOG_ERROR("DJI motor list not initialized\n");
         return NULL;
     }
 
-    // 直接在数组中初始化电机数据
-    DJIMotor_t *DJIMotor = &dji_motor_list[idx];
-    memset(DJIMotor, 0, sizeof(DJIMotor_t));
+    // 查找一个空位来初始化电机
+    DJIMotor_t *DJIMotor = NULL;
+    for (int i = 0; i < DJI_MOTOR_CNT; i++) {
+        if (dji_motor_list[i].can_device == NULL) {
+            DJIMotor = &dji_motor_list[i];
+            memset(DJIMotor, 0, sizeof(DJIMotor_t));
+            break;
+        }
+    }
+    
+    // 检查是否找到空位
+    if (DJIMotor == NULL) {
+        LOG_ERROR("DJI motor count exceeds maximum limit\n");
+        return NULL;
+    }
 
     // motor basic setting 电机基本设置
     DJIMotor->DJI_Motor_Info = config->Motor_init_Info;                 //电机信息
@@ -192,13 +202,11 @@ DJIMotor_t *DJIMotorInit(Motor_Init_Config_s *config)
         .rx_mode = CAN_MODE_IT,
     };
     // 注册 CAN 设备并获取引用
-    Can_Device *can_dev = BSP_CAN_Device_Init(&can_config);
-    if (can_dev == NULL) {
+    DJIMotor->can_device = BSP_CAN_Device_Init(&can_config);
+    if (DJIMotor->can_device == NULL) {
         LOG_ERROR("Failed to initialize CAN device for DJI motor");
         return NULL;
     }
-    // 保存设备指针
-    DJIMotor->can_device = can_dev;
 
     DJIMotor->motor_settings.control_algorithm = config->controller_setting_init_config.control_algorithm;
     switch (config->controller_setting_init_config.control_algorithm) {
@@ -222,9 +230,8 @@ DJIMotor_t *DJIMotorInit(Motor_Init_Config_s *config)
     //掉线检测
     DJIMotor->offline_index =offline_module_device_register(&config->offline_device_motor);
     
-    // 增加索引并返回对应元素的地址
-    DJIMotor->idx = idx;
-    idx++;
+    LOG_INFO("DJI motor initialized on CAN bus [%s] with TX ID: 0x%X, RX ID: 0x%X\n",
+             (can_config.can_handle == &hcan1 ? "CAN1" : "CAN2"), can_config.tx_id, can_config.rx_id);
     return DJIMotor;
 }
 
@@ -301,7 +308,7 @@ static float CalculatePIDOutput(DJIMotor_t *motor)
         if (motor->motor_settings.speed_feedback_source == OTHER_FEED)
             pid_measure = *motor->motor_controller.other_speed_feedback_ptr;
         else // MOTOR_FEED
-            pid_measure = motor->measure.speed_aps;
+            pid_measure = motor->measure.speed_rpm;
 
         if (motor->motor_settings.feedback_reverse_flag == FEEDBACK_DIRECTION_REVERSE) pid_measure *= -1;
         // 更新pid_ref
@@ -315,19 +322,14 @@ static float CalculateLQROutput(DJIMotor_t *motor)
 {
     float degree=0.0f,angular_velocity=0.0f,lqr_ref=0.0f;
     
-    lqr_ref = motor->motor_controller.ref ;
-    
-    if(motor->motor_settings.motor_reverse_flag == MOTOR_DIRECTION_REVERSE)
-    {
-        lqr_ref *= -1;
-    }
+    lqr_ref = motor->motor_controller.ref;
+    if(motor->motor_settings.motor_reverse_flag == MOTOR_DIRECTION_REVERSE){lqr_ref *= -1;}
 
     // 位置状态计算
     if ((motor->motor_settings.close_loop_type & ANGLE_LOOP) && motor->motor_settings.outer_loop_type == ANGLE_LOOP)
     {
         degree = (motor->motor_settings.angle_feedback_source == OTHER_FEED) ?
-                 *motor->motor_controller.other_angle_feedback_ptr :
-                 motor->measure.total_angle;
+                *motor->motor_controller.other_angle_feedback_ptr : motor->measure.total_angle;
 
         if (motor->motor_settings.feedback_reverse_flag == FEEDBACK_DIRECTION_REVERSE) degree *= -1;
     }
@@ -336,15 +338,12 @@ static float CalculateLQROutput(DJIMotor_t *motor)
     if ((motor->motor_settings.close_loop_type & SPEED_LOOP) && (motor->motor_settings.outer_loop_type & (ANGLE_LOOP | SPEED_LOOP)))
     {
         angular_velocity = (motor->motor_settings.speed_feedback_source == OTHER_FEED) ?
-                 *motor->motor_controller.other_speed_feedback_ptr :
-                 motor->measure.speed_aps;
+                *motor->motor_controller.other_speed_feedback_ptr : motor->measure.speed_rad;
 
         if (motor->motor_settings.feedback_reverse_flag == FEEDBACK_DIRECTION_REVERSE) angular_velocity *= -1;
     }
 
     float torque = LQRCalculate(&motor->motor_controller.lqr, degree, angular_velocity, lqr_ref);
-
-    if (motor->motor_settings.feedback_reverse_flag == FEEDBACK_DIRECTION_REVERSE) torque *= -1;
 
     switch (motor->DJI_Motor_Info.motor_type) 
     {                                          
@@ -372,15 +371,18 @@ static float CalculateLQROutput(DJIMotor_t *motor)
 
 void DJIMotorControl(void)
 {
+    // 检查dji_motor_list是否已初始化
+    if (dji_motor_list == NULL) {return;}
+
     uint8_t group, num;
     float control_output;
     DJIMotor_t *motor;
     
     //计算控制输出
-    for (size_t i = 0; i < idx; ++i) {
-        if (i >= DJI_MOTOR_CNT || dji_motor_list[i].can_device == NULL){continue;}
-        
+    for (size_t i = 0; i < DJI_MOTOR_CNT; ++i) {
+        if (dji_motor_list[i].can_device == NULL){continue;}
         motor = &dji_motor_list[i];
+        
         if (offline_module_get_device_status(motor->offline_index)== STATE_OFFLINE || motor->stop_flag == MOTOR_STOP) {
             control_output = 0;
             if (motor->motor_settings.control_algorithm == CONTROL_PID)
@@ -423,15 +425,10 @@ void DJIMotorControl(void)
         }
     }
 }
-#else   
+void DJIMotorListInit(DJIMotor_t *motor_list)
+{
+    dji_motor_list = motor_list;
+}
 
-DJIMotor_t *DJIMotorInit(Motor_Init_Config_s *config){return NULL;}
-void DJIMotorSetRef(DJIMotor_t *motor, float ref){}
-void DJIMotorChangeFeed(DJIMotor_t *motor, Closeloop_Type_e loop, Feedback_Source_e type){}
-void DJIMotorStop(DJIMotor_t *motor){}
-void DJIMotorEnable(DJIMotor_t *motor){}
-void DJIMotorOuterLoop(DJIMotor_t *motor, Closeloop_Type_e outer_loop, LQR_Init_Config_s *lqr_config){}
-
-#endif
 
 

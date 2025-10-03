@@ -2,14 +2,13 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-09 17:03:48
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-03 10:13:21
+ * @LastEditTime: 2025-10-03 10:15:18
  * @FilePath: \rm_base\BSP\CAN\bsp_can.c
  * @Description: 
  */
 
 #include "bsp_can.h"
 #include "osal_def.h"
-#include "tx_port.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
