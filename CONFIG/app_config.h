@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-14 12:51:31
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-17 20:31:20
- * @FilePath: /rm_base/CONFIG/app_config.h
+ * @LastEditTime: 2025-10-04 12:51:37
+ * @FilePath: \rm_base\CONFIG\app_config.h
  * @Description: 
  */
 #ifndef _APP_CONFIG_H_
@@ -33,5 +33,13 @@
 #define DM_IMU_THREAD_STACK_SIZE       1024                                   // dm_imu线程栈大小
 #define DM_IMU_THREAD_STACK_SECTION   __attribute__((section(".ccmram")))     // 线程栈内存区域
 #define DM_IMU_THREAD_PRIORITY         12                                     // dm_imu线程优先级
+/* motor 控制线程配置 */
+#define MOTOR_THREAD_STACK_SIZE        1024                                   // motor线程栈大小
+#define MOTOR_THREAD_STACK_SECTION     __attribute__((section(".ccmram")))    // 线程栈内存区域
+#define MOTOR_THREAD_PRIORITY          6                                      // motor线程优先级
+/* motor decode线程配置 */
+#define MOTOR_DECODE_THREAD_STACK_SIZE 1024                                   // motor_decode线程栈大小
+#define MOTOR_DECODE_THREAD_STACK_SECTION __attribute__((section(".ccmram"))) // 线程栈内存区域
+#define MOTOR_DECODE_THREAD_PRIORITY   5                                      // motor_decode线程优先级
 
 #endif // _APP_CONFIG_H_

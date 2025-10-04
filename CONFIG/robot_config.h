@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-17 10:52:48
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-20 10:07:29
- * @FilePath: /rm_base/CONFIG/robot_config.h
+ * @LastEditTime: 2025-10-04 21:27:40
+ * @FilePath: \rm_base\CONFIG\robot_config.h
  * @Description: 
  */
 #ifndef _ROBOT_CONFIG_H_
