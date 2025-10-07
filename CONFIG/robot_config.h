@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-17 10:52:48
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-04 21:27:40
+ * @LastEditTime: 2025-10-07 20:42:32
  * @FilePath: \rm_base\CONFIG\robot_config.h
  * @Description: 
  */
@@ -13,6 +13,7 @@
 #define MOTOR_NONE                        0
 #define MOTOR_DJI                         (1 << 0)
 #define MOTOR_DM                          (1 << 1)
+#define MOTOR_BENMO                       (1 << 2)
 
 
 /* 机器人通讯定义*/

@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-10-03 12:47:14
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-04 21:44:36
+ * @LastEditTime: 2025-10-07 20:39:14
  * @FilePath: \rm_base\applications\motor_task\motor_task.c
  * @Description: 
  */
@@ -22,6 +22,10 @@ static DJIMotor_t dji_motor_list[DJI_MOTOR_CNT];
 #if (MOTOR_MODULE_USE & MOTOR_DM)
 #include "damiao.h"
 static DMMOTOR_t dm_motor_list[DM_MOTOR_CNT];
+#endif
+#if (MOTOR_MODULE_USE & MOTOR_BENMO)
+#include "benmo.h"
+static BenmoMotor_t benmo_motor_list[BENMO_MOTOR_CNT];
 #endif
 
 // CAN事件映射结构体
@@ -53,6 +57,9 @@ void motor_task(ULONG thread_input)
         #if (MOTOR_MODULE_USE & MOTOR_DM)
         DMMotorcontrol();
         #endif
+        #if (MOTOR_MODULE_USE & MOTOR_BENMO)
+        BenmoMotorControl();
+        #endif
         osal_delay_ms(2);
     }
 }
@@ -76,12 +83,21 @@ void motor_decode_task(ULONG thread_input)
                 if (can_event_motor_map[i].eventflag & triggered_flag) {
                     // 根据电机类型调用相应的解码函数
                     switch (can_event_motor_map[i].motor_type) {
+                        #if (MOTOR_MODULE_USE & MOTOR_DJI)
                         case MOTOR_DJI:
                             DecodeDJIMotor((DJIMotor_t*)can_event_motor_map[i].motor_ptr);
                             break;
+                        #endif
+                        #if (MOTOR_MODULE_USE & MOTOR_DM)
                         case MOTOR_DM:
                             DMMotorDecode((DMMOTOR_t*)can_event_motor_map[i].motor_ptr);
                             break;
+                        #endif
+                        #if (MOTOR_MODULE_USE & MOTOR_BENMO)
+                        case MOTOR_BENMO:
+                            DecodeBenmoMotor((BenmoMotor_t*)can_event_motor_map[i].motor_ptr);
+                            break;
+                        #endif
                         default:
                             break;
                     }
@@ -126,6 +142,21 @@ void motor_task_init(void)
     }
     #endif
 
+    #if (MOTOR_MODULE_USE & MOTOR_BENMO)
+    for (int i = 0; i < BENMO_MOTOR_CNT; i++) {
+        if (benmo_motor_list[i].can_device != NULL) {
+            motor_devices[motor_device_count++] = benmo_motor_list[i].can_device;
+            // 建立映射关系
+            if (map_count < 32) {   
+                can_event_motor_map[map_count].eventflag = benmo_motor_list[i].can_device->eventflag;
+                can_event_motor_map[map_count].motor_ptr = &benmo_motor_list[i];
+                can_event_motor_map[map_count].motor_type = MOTOR_BENMO;
+                can_event_motor_map[map_count].can_device = benmo_motor_list[i].can_device;
+                map_count++;    
+            }
+        }
+    }
+    #endif
     osal_thread_create(&motor_thread, "motor_task", motor_task, 0,
                        &motor_thread_stack, MOTOR_THREAD_STACK_SIZE,MOTOR_THREAD_PRIORITY);
     osal_thread_create(&motor_decode_thread, "motor_decode_task", motor_decode_task, 0,
@@ -144,6 +175,9 @@ void motor_list_init(void)
     #endif
     #if (MOTOR_MODULE_USE & MOTOR_DM)
     DMMotorListInit(dm_motor_list);
+    #endif
+    #if (MOTOR_MODULE_USE & MOTOR_BENMO)
+    BenmoMotorListInit(benmo_motor_list);
     #endif
 }
 

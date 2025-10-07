@@ -97,6 +97,8 @@ typedef enum
     M2006,
     DM4310,
     DM6220,
+    P1010B_BENMO,
+    M1505A_BENMO
 } Motor_Type_e;
 
 /* 电机基本信息结构体，包含电机类型、减速比和扭矩常数等 */

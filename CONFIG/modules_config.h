@@ -52,5 +52,7 @@
 #define DJI_MOTOR_CNT                     8                                     //DJI电机数量
 /* 达妙电机模块 */
 #define DM_MOTOR_CNT	                     4                                     //达妙电机数量
+/* 本末电机模块 */
+#define BENMO_MOTOR_CNT                   4                                     //本末电机数量
 
 #endif // _MODULES_CONFIG_H_

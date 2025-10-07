@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-07 13:55:47
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-09 17:18:17
- * @FilePath: /rm_base/BSP/BSP_CONFIG.h
+ * @LastEditTime: 2025-10-05 19:16:38
+ * @FilePath: \rm_base\BSP\BSP_CONFIG.h
  * @Description: bsp配置文件
  */
 #ifndef _BSP_CONFIG_H_
@@ -32,5 +32,7 @@
 /* CAN 配置 */
 #define CAN_BUS_NUM 2                  // 总线数量
 #define MAX_DEVICES_PER_CAN_BUS  8     // 每总线最大设备数
+/* CAN 过滤器配置 */
+#define BSP_CAN_FILTER_ENABLE   1      // 启用CAN过滤器，接收特定CAN消息，关闭则全接收，方便各类电机测试
 
 #endif // _BSP_CONFIG_H_
