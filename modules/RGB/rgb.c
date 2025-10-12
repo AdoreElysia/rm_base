@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 10:26:48
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-26 23:06:57
- * @FilePath: /rm_base/modules/RGB/rgb.c
+ * @LastEditTime: 2025-10-12 10:09:39
+ * @FilePath: \rm_base\modules\RGB\rgb.c
  * @Description: 
  */
 #include "rgb.h"
@@ -74,9 +74,9 @@ void RGB_show(uint32_t aRGB)
     }
     
     // 将0-255的值转换为0-1000的占空比
-    uint8_t red_duty = (red * 1000) / 255;
-    uint8_t green_duty = (green * 1000) / 255;
-    uint8_t blue_duty = (blue * 1000) / 255;
+    uint16_t red_duty = (red * 1000) / 255;
+    uint16_t green_duty = (green * 1000) / 255;
+    uint16_t blue_duty = (blue * 1000) / 255;
     
     // 设置PWM占空比
     BSP_PWM_Set_Duty_Cycle(pwm_r,red_duty);
