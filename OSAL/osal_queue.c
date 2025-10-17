@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-07 10:43:45
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-07 10:47:00
- * @FilePath: /rm_base/OSAL/osal_queue.c
+ * @LastEditTime: 2025-10-13 16:32:18
+ * @FilePath: \rm_base\OSAL\osal_queue.c
  * @Description: OSAL队列管理接口实现
  */
 
@@ -13,6 +13,7 @@
 #if (OSAL_RTOS_TYPE == OSAL_THREADX)
 
 /* ThreadX下的队列实现 */
+/* ThreadX下的队列实现 */
 osal_status_t osal_queue_create(osal_queue_t *queue, 
                                 const char *name,
                                 unsigned int msg_size,
@@ -20,18 +21,18 @@ osal_status_t osal_queue_create(osal_queue_t *queue,
                                 void *msg_buffer)
 {
     UINT result;
-    ULONG queue_size;
     
     if (queue == NULL || msg_buffer == NULL || msg_size == 0 || msg_count == 0) {
         return OSAL_INVALID_PARAM;
     }
     
-    /* 计算队列总大小 */
-    queue_size = msg_size * msg_count * sizeof(ULONG);
+    /* 计算队列总大小 - 在ThreadX中，队列大小是消息数量乘以消息大小（以ULONG为单位） */
+    /* msg_size已经是字节数，需要转换为ULONG数量 */
+    ULONG msg_size_in_ulongs = (msg_size + sizeof(ULONG) - 1) / sizeof(ULONG); /* 向上取整 */
     
     /* ThreadX队列创建 */
-    result = tx_queue_create((TX_QUEUE*)queue, (CHAR*)name, msg_size,
-                             (VOID*)msg_buffer, queue_size);
+    result = tx_queue_create((TX_QUEUE*)queue, (CHAR*)name, msg_size_in_ulongs,
+                             (VOID*)msg_buffer, msg_count * msg_size_in_ulongs * sizeof(ULONG));
     
     if (result == TX_SUCCESS) {
         return OSAL_SUCCESS;
