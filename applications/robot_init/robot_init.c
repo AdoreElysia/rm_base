@@ -21,11 +21,12 @@
 
 static user_cdc_t user_cdc;
 
-void bsp_init()
+void base_init()
 {
   DWT_Init(168);
   RGB_init();
   itc_init();
+  motor_list_init();
   //reset cdc_acm
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
   DWT_Delay(0.1);
@@ -39,14 +40,13 @@ void app_init(){
   ins_task_init();
   dm_imu_task_init();
   remote_task_init(); 
-  motor_list_init();
   motor_task_init();
 }
 
 
 void robot_init()
 {
-  bsp_init();
+  base_init();
   app_init();
   usb_user_init(&user_cdc);
 }
