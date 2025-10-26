@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-10-03 12:47:14
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-07 20:39:14
+ * @LastEditTime: 2025-10-26 11:53:40
  * @FilePath: \rm_base\applications\motor_task\motor_task.c
  * @Description: 
  */
@@ -181,4 +181,35 @@ void motor_list_init(void)
     #endif
 }
 
+void* get_motor_ptr(uint8_t motor_type, uint8_t idx)
+{
+    switch (motor_type) {
+        #if (MOTOR_MODULE_USE & MOTOR_DJI)
+        case MOTOR_DJI:
+            if (idx < DJI_MOTOR_CNT) {
+                return (void*)&dji_motor_list[idx];
+            }
+            break;
+        #endif
 
+        #if (MOTOR_MODULE_USE & MOTOR_DM)
+        case MOTOR_DM:
+            if (idx < DM_MOTOR_CNT) {
+                return (void*)&dm_motor_list[idx];
+            }
+            break;
+        #endif
+
+        #if (MOTOR_MODULE_USE & MOTOR_BENMO)
+        case MOTOR_BENMO:
+            if (idx < BENMO_MOTOR_CNT) {
+                return (void*)&benmo_motor_list[idx];
+            }
+            break;
+        #endif
+
+        default:
+            break;
+    }
+    return NULL;
+}

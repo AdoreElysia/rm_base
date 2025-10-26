@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-10-20 22:19:25
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-26 11:35:02
+ * @LastEditTime: 2025-10-26 12:49:39
  * @FilePath: \rm_base\modules\board_comm\board_comm.c
  * @Description: 
  */
@@ -89,20 +89,21 @@ osal_status_t board_com_send(const Chassis_Ctrl_Cmd_s *cmd)
     }
     
     // 编码数据
+    int16_t angle_int = (int16_t)cmd->offset_angle;
     board_comm_instance->candevice->tx_buff[0] = (int8_t)cmd->vx;
     board_comm_instance->candevice->tx_buff[1] = (int8_t)cmd->vy;
     board_comm_instance->candevice->tx_buff[2] = (int8_t)cmd->wz;
-    board_comm_instance->candevice->tx_buff[3] = (uint8_t)cmd->chassis_mode;
-    board_comm_instance->candevice->tx_buff[4] = cmd->reserved_1;
-    board_comm_instance->candevice->tx_buff[5] = cmd->reserved_2;
-    board_comm_instance->candevice->tx_buff[6] = cmd->reserved_3;
-    board_comm_instance->candevice->tx_buff[7] = cmd->reserved_4;
+    board_comm_instance->candevice->tx_buff[3] = (angle_int >> 8) & 0xFF;
+    board_comm_instance->candevice->tx_buff[4] = angle_int & 0xFF;
+    board_comm_instance->candevice->tx_buff[5] = (uint8_t)cmd->chassis_mode;
+    board_comm_instance->candevice->tx_buff[6] = cmd->reserved_1;
+    board_comm_instance->candevice->tx_buff[7] = cmd->reserved_2;
 
     // 发送数据
     osal_status_t status = OSAL_SUCCESS;
     status = BSP_CAN_SendDevice(board_comm_instance->candevice);
     return status;
-}
+} 
 osal_status_t board_com_recv(Chassis_Upload_Data_s *data)
 {
     // 参数检查
@@ -139,13 +140,13 @@ osal_status_t board_com_recv(Chassis_Ctrl_Cmd_s *cmd)
         cmd->vx = (float)((int8_t)data[0]);
         cmd->vy = (float)((int8_t)data[1]);
         cmd->wz = (float)((int8_t)data[2]);
+        // offset_angle 由两个字节组合而成
+        int16_t angle_int = ((int16_t)data[3] << 8) | data[4];
+        cmd->offset_angle = (float)angle_int;
         // 剩余数据直接赋值
-        // offset_angle 由底盘自行处理，此处不接收
         cmd->chassis_mode = (chassis_mode_e)data[3];
         cmd->reserved_1 = data[4];
         cmd->reserved_2 = data[5];
-        cmd->reserved_3 = data[6];
-        cmd->reserved_4 = data[7];
         return OSAL_SUCCESS;
     }
     

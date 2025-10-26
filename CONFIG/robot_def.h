@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-10-19 22:54:19
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-26 11:37:49
+ * @LastEditTime: 2025-10-26 12:48:16
  * @FilePath: \rm_base\CONFIG\robot_def.h
  * @Description: 
  */
@@ -74,12 +74,10 @@ typedef struct
     float vx;           // 前进方向速度
     float vy;           // 横移方向速度
     float wz;           // 旋转速度
-    chassis_mode_e chassis_mode;    // 底盘模式
     float offset_angle;             // 对齐角度
+    chassis_mode_e chassis_mode;    // 底盘模式
     uint8_t reserved_1; 
-    uint8_t reserved_2;
-    uint8_t reserved_3;
-    uint8_t reserved_4;    
+    uint8_t reserved_2;    
 } Chassis_Ctrl_Cmd_s;
 
 typedef struct
