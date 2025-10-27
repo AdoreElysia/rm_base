@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:26:00
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-15 21:40:21
- * @FilePath: /rm_base/modules/REMOTE/remote_data.h
+ * @LastEditTime: 2025-10-26 16:52:27
+ * @FilePath: \rm_base\modules\REMOTE\remote_data.h
  * @Description: 
  */
 #ifndef _REMOTE_DATA_H_
@@ -72,14 +72,6 @@ typedef struct {
     uint8_t custom_right; 
     uint8_t trigger;       
 }button_state_t;
-
-enum channel_state
-{
-    channel_none,
-    channel_down,
-    channel_bias,
-    channel_up
-}; 
 
 
 #endif // _REMOTE_DATA_H_

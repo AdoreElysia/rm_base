@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-17 10:52:48
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-26 12:48:31
+ * @LastEditTime: 2025-10-26 12:56:14
  * @FilePath: \rm_base\CONFIG\robot_config.h
  * @Description: 
  */
@@ -21,8 +21,8 @@
 //#define ONE_BOARD // 单板控制
 
 #ifndef ONE_BOARD // 多板控制 （注意只能有一个生效）
-        #define CHASSIS_BOARD //底盘板
-        //#define GIMBAL_BOARD  //云台板
+        //#define CHASSIS_BOARD //底盘板
+        #define GIMBAL_BOARD  //云台板 
         // 检查是否出现主控板定义冲突,只允许一个开发板定义存在,否则编译会自动报错
         #if (defined(CHASSIS_BOARD) + defined(GIMBAL_BOARD)!=1)
         #error Conflict board definition! You can only define one board type.

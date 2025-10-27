@@ -2,12 +2,13 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:18:31
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-01 21:48:10
- * @FilePath: /rm_base/modules/REMOTE/remote.c
+ * @LastEditTime: 2025-10-26 23:51:58
+ * @FilePath: \rm_base\modules\REMOTE\remote.c
  * @Description: 
  */
 #include "remote.h"
 #include "modules_config.h"
+#include "offline.h"
 #include "osal_def.h"
 #include <stdint.h>
 #include <string.h>
@@ -68,40 +69,37 @@ osal_status_t remote_init(remote_instance_t *remote)
     return ret;
 }
 
-uint8_t get_remote_channel_state(uint8_t channel_index, uint8_t is_vt_remote)
+int16_t get_remote_channel(uint8_t channel_index, uint8_t is_vt_remote)
 {
-    if (remote_instance == NULL || remote_instance->initflag !=1) {
-        return channel_none;
+    if (remote_instance == NULL || remote_instance->initflag != 1) {
+        return 0;
     }
 
-    if (is_vt_remote)
-    {
+    if (is_vt_remote) {
 #if defined(REMOTE_VT_SOURCE) && REMOTE_VT_SOURCE == 2
-        switch (channel_index) {
-            case 1:  
-                return remote_instance->vt03_instance.vt03_remote_data.button_state.switch_pos;
-            case 2:  
-                return remote_instance->vt03_instance.vt03_remote_data.button_state.custom_left;
-            case 3:  
-                return remote_instance->vt03_instance.vt03_remote_data.button_state.custom_right;
-            case 4:  
-                return remote_instance->vt03_instance.vt03_remote_data.button_state.pause;
-            case 5:
-                return remote_instance->vt03_instance.vt03_remote_data.button_state.trigger;
-            default:
-                return channel_none;
-        }
-#endif 
-        return channel_none;
-    }else{
+        return get_vt03_channel(&remote_instance->vt03_instance, channel_index);
+#endif
+    } else {
 #if defined(REMOTE_SOURCE) && REMOTE_SOURCE == 1
-    return get_sbus_channel_state(&remote_instance->sbus_instance, channel_index);
+        return get_sbus_channel(&remote_instance->sbus_instance, channel_index);
 #elif defined(REMOTE_SOURCE) && REMOTE_SOURCE == 2
-    return get_dt7_sw_state(&remote_instance->dt7_instance, channel_index);
-#else  
-    return channel_none;
+        return get_dt7_channel(&remote_instance->dt7_instance, channel_index);
 #endif
     }
+    return 0;
+}
+
+button_state_t* get_remote_button_state()
+{
+    if (remote_instance == NULL || remote_instance->initflag != 1) {
+        return NULL;
+    }
+
+#if defined(REMOTE_VT_SOURCE) && REMOTE_VT_SOURCE == 2
+    return &remote_instance->vt03_instance.vt03_remote_data.button_state;
+#else
+    return NULL;
+#endif
 }
 
 mouse_state_t* get_remote_mouse_state(uint8_t is_vt_remote)
@@ -150,3 +148,24 @@ keyboard_state_t * get_remote_keyboard_state(uint8_t is_vt_remote)
     return NULL;
 }
 
+uint8_t remote_device_status(uint8_t is_vt_remote)
+{
+    if (remote_instance == NULL || remote_instance->initflag !=1) {
+        return STATE_OFFLINE;
+    }
+
+    if (is_vt_remote)
+    {
+#if defined(REMOTE_VT_SOURCE) && REMOTE_VT_SOURCE == 2
+        return offline_module_get_device_status(remote_instance->vt03_instance.offline_index);
+#elif defined(REMOTE_VT_SOURCE) && REMOTE_VT_SOURCE == 1
+        return offline_module_get_device_status(remote_instance->vt02_instance.offline_index);
+#endif
+    }else{
+#if defined(REMOTE_SOURCE) && REMOTE_SOURCE == 2
+        return offline_module_get_device_status(remote_instance->dt7_instance.offline_index);
+#elif defined(REMOTE_SOURCE) && REMOTE_SOURCE == 1
+        return offline_module_get_device_status(remote_instance->sbus_instance.offline_index);
+#endif       
+    }   
+}

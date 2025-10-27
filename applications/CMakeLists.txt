@@ -10,6 +10,8 @@ add_library(${name} STATIC
     remote_task/remote_task.c
     dm_imu_task/dm_imu_task.c
     motor_task/motor_task.c
+    robot_control_task/robot_control_task.c
+    robot_control_task/robot_control_fun.c
 )
 
 # 设置包含目录
@@ -22,6 +24,7 @@ target_include_directories(${name}
     ${CMAKE_CURRENT_SOURCE_DIR}/dm_imu_task
     ${CMAKE_CURRENT_SOURCE_DIR}/shell_task
     ${CMAKE_CURRENT_SOURCE_DIR}/motor_task
+    ${CMAKE_CURRENT_SOURCE_DIR}/robot_control_task
 )
 
 # 链接必要的库

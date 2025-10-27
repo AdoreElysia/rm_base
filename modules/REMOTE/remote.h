@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:18:31
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-01 21:58:37
- * @FilePath: /rm_base/modules/REMOTE/remote.h
+ * @LastEditTime: 2025-10-26 16:48:37
+ * @FilePath: \rm_base\modules\REMOTE\remote.h
  * @Description: 
  */
 #ifndef _REMOTE_H_
@@ -41,12 +41,18 @@ typedef struct {
  */
 osal_status_t remote_init(remote_instance_t *remote_instance);
 /**
- * @brief 获取遥控器通道状态
+ * @brief 获取遥控器通道数据
  * @param channel_index 通道索引
  * @param is_vt_remote 是否为图传遥控器
- * @return uint8_t 通道状态
+ * @return uint8_t 通道值
  */
-uint8_t get_remote_channel_state(uint8_t channel_index, uint8_t is_vt_remote);
+int16_t get_remote_channel(uint8_t channel_index, uint8_t is_vt_remote);
+/**
+ * @brief 获取按键状态
+ * @note 仅适用于VT03图传遥控器
+ * @return button_state_t* 按键状态指针
+ */
+button_state_t* get_remote_button_state();
 /**
  * @brief 获取鼠标状态
  * @param is_vt_remote 是否为图传遥控器
@@ -64,5 +70,11 @@ keyboard_state_t * get_remote_keyboard_state(uint8_t is_vt_remote);
  * @param remote_instance 遥控器实例指针
  */
 void remote_shell_cmd_init(remote_instance_t *remote_instance);
+/**
+ * @brief 获取遥控器设备状态
+ * @param is_vt_remote 是否为图传遥控器
+ * @return uint8_t 设备状态
+ */
+uint8_t remote_device_status(uint8_t is_vt_remote);
 
 #endif // _REMOTE_H_

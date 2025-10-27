@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-10-01 20:46:36
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-01 22:00:57
- * @FilePath: /rm_base/modules/REMOTE/remote_shellcmd.c
+ * @LastEditTime: 2025-10-27 00:08:53
+ * @FilePath: \rm_base\modules\REMOTE\remote_shellcmd.c
  * @Description: 
  */
 #include "remote.h"
@@ -58,34 +58,20 @@ void remote_shell_cmd(int argc, char **argv) {
         shell_module_printf("Channels Status:\r\n");
 #if defined(REMOTE_SOURCE) && REMOTE_SOURCE == 1
         for (int i = 1; i <= 16; i++) {
-            uint8_t state = get_remote_channel_state(i, 0);
-            const char* state_str = "Unknown";
-            switch (state) {
-                case channel_down: state_str = "Down"; break;
-                case channel_bias: state_str = "Bias"; break;
-                case channel_up: state_str = "Up"; break;
-                default: state_str = "None"; break;
-            }
-            shell_module_printf("  CH%d: %s\r\n", i, state_str);
+            int16_t state = get_remote_channel(i, 0);
+            shell_module_printf("  CH%d: %d\r\n", i, state);
         }
 #elif defined(REMOTE_SOURCE) && REMOTE_SOURCE == 2
-        for (int i = 1; i <= 2; i++) {
-            uint8_t state = get_remote_channel_state(i, 0);
-            const char* state_str = "Unknown";
-            switch (state) {
-                case channel_down: state_str = "Down"; break;
-                case channel_bias: state_str = "Bias"; break;
-                case channel_up: state_str = "Up"; break;
-                default: state_str = "None"; break;
-            }
-            shell_module_printf("  SW%d: %s\r\n", i, state_str);
+        for (int i = 1; i <= 7; i++) {
+            int16_t state = get_remote_channel(i, 0);
+            shell_module_printf("  CH%d: %d\r\n", i, state);
         }
 #endif
 
 #if defined(REMOTE_VT_SOURCE) && REMOTE_VT_SOURCE == 2
         shell_module_printf("VT Channels:\r\n");
         for (int i = 1; i <= 5; i++) {
-            uint8_t state = get_remote_channel_state(i, 1);
+            int16_t state = get_remote_channel(i, 1);
             shell_module_printf("  VT_CH%d: %d\r\n", i, state);
         }
 #endif

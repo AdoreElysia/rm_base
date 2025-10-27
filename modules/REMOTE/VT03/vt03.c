@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:30:21
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-30 13:40:28
- * @FilePath: /rm_base/modules/REMOTE/VT03/vt03.c
+ * @LastEditTime: 2025-10-26 23:46:09
+ * @FilePath: \rm_base\modules\REMOTE\VT03\vt03.c
  * @Description: 
  */
 #include "vt03.h"
@@ -11,6 +11,7 @@
 #include "modules_config.h"
 #include "offline.h"
 #include "osal_def.h"
+#include <stdint.h>
 #include <string.h>
 
 #define log_tag "vt03"
@@ -19,10 +20,6 @@
 #if defined (REMOTE_VT_SOURCE) && (REMOTE_VT_SOURCE == 2)
 
 static uint8_t VT03_buf[2][REMOTE_UART_RX_BUF_SIZE];
-
-#define VT03_CH_VALUE_MIN    ((uint16_t)364)
-#define VT03_CH_VALUE_OFFSET ((uint16_t)1024)
-#define VT03_CH_VALUE_MAX    ((uint16_t)1684)
 
 osal_status_t vt03_init(VT03_Instance_t *vt03_instance)
 {
@@ -142,10 +139,40 @@ void vt03_decode(VT03_Instance_t *vt03_instance, uint8_t *buf){
         }
     }
 }
+
+int16_t get_vt03_channel(VT03_Instance_t *vt03_instance, uint8_t channel_index){
+    if (vt03_instance==NULL || channel_index < 1 || channel_index > 5) {return 0;}
+    
+    int16_t channel_value;
+    switch (channel_index)
+    {
+    case 1:
+        channel_value = vt03_instance->vt03_remote_data.ch1;
+        break;
+    case 2:
+        channel_value = vt03_instance->vt03_remote_data.ch2;
+        break;
+    case 3:
+        channel_value = vt03_instance->vt03_remote_data.ch3;
+        break;
+    case 4:
+        channel_value = vt03_instance->vt03_remote_data.ch4;
+        break;
+    case 5:
+        channel_value = vt03_instance->vt03_remote_data.wheel;
+        break;
+    default:
+        channel_value = 0;
+    }
+    return channel_value;
+}
 #else  
 osal_status_t vt03_init(VT03_Instance_t *vt03_instance)
 {
     return OSAL_ERROR; 
 }
 void vt03_decode(VT03_Instance_t *vt03_instance, uint8_t *buf){}
+int16_t get_vt03_channel(VT03_Instance_t *vt03_instance, uint8_t channel_index){
+    return 0;
+}
 #endif

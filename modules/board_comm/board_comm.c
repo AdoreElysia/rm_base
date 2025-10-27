@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-10-20 22:19:25
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-26 12:49:39
+ * @LastEditTime: 2025-10-27 00:15:45
  * @FilePath: \rm_base\modules\board_comm\board_comm.c
  * @Description: 
  */
@@ -112,7 +112,7 @@ osal_status_t board_com_recv(Chassis_Upload_Data_s *data)
     }
     
     // 读取CAN数据
-    if (BSP_CAN_ReadSingleDevice(board_comm_instance->candevice, OSAL_WAIT_FOREVER) == OSAL_SUCCESS) {
+    if (BSP_CAN_ReadSingleDevice(board_comm_instance->candevice, OSAL_NO_WAIT) == OSAL_SUCCESS) {
         uint8_t* rx_data = board_comm_instance->candevice->rx_buff;
         
         // 拷贝数据

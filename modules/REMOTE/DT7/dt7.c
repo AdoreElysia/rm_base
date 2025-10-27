@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:29:57
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-01 22:15:43
- * @FilePath: /rm_base/modules/REMOTE/DT7/dt7.c
+ * @LastEditTime: 2025-10-26 17:05:56
+ * @FilePath: \rm_base\modules\REMOTE\DT7\dt7.c
  * @Description: 
  */
 #include "dt7.h"
@@ -16,13 +16,6 @@
 #include "shell_log.h"
 
 
-#define DT7_CH_VALUE_MIN ((uint16_t)364)
-#define DT7_CH_VALUE_OFFSET ((uint16_t)1024)
-#define DT7_CH_VALUE_MAX ((uint16_t)1684)
-
-#define DT7_SW_UP ((uint16_t)1)   // 开关向上时的值
-#define DT7_SW_MID ((uint16_t)3)  // 开关中间时的值
-#define DT7_SW_DOWN ((uint16_t)2) // 开关向下时的值
 
 #if defined (REMOTE_SOURCE) && (REMOTE_SOURCE == 2)
 
@@ -136,37 +129,45 @@ void dt7_decode(DT7_Instance_t *dt7_instance, uint8_t *buf){
     offline_module_device_update(dt7_instance->offline_index);
 }
 
-enum channel_state get_dt7_sw_state(DT7_Instance_t *dt7_instance, uint8_t sw_index)
-{
-    if (dt7_instance == NULL || sw_index < 1 || sw_index > 2) {
-        return channel_none;
+int16_t get_dt7_channel(DT7_Instance_t *dt7_instance, uint8_t channel_index){
+    if (dt7_instance == NULL || channel_index < 1 || channel_index > 6) {
+        return 0;
     }
-    
-    uint8_t sw_value;
-    if (sw_index == 1) {
-        sw_value = dt7_instance->dt7_input.sw1;
-    } else {
-        sw_value = dt7_instance->dt7_input.sw2;
-    }
-    
-    switch (sw_value) {
-        case 1:  // DT7_SW_UP
-            return channel_up;
-        case 2:  // DT7_SW_DOWN
-            return channel_down;
-        case 3:  // DT7_SW_MID
-            return channel_bias;
+    uint16_t channel_value;
+    switch (channel_index) {
+        case 1:
+            channel_value = dt7_instance->dt7_input.ch1;
+            break;
+        case 2:
+            channel_value = dt7_instance->dt7_input.ch2;
+            break;
+        case 3: 
+            channel_value = dt7_instance->dt7_input.ch3;
+            break;
+        case 4:
+            channel_value = dt7_instance->dt7_input.ch4;             
+            break;        
+        case 5:
+            channel_value = dt7_instance->dt7_input.sw1;
+            break;  
+        case 6:
+            channel_value = dt7_instance->dt7_input.sw2;
+            break;
+        case 7:
+            channel_value = dt7_instance->dt7_input.wheel;
+            break;
         default:
-            return channel_none;
+            channel_value = 0;
+            break;      
     }
+    return channel_value;
 }
-
 #else 
 osal_status_t dt7_init(DT7_Instance_t *dt7_instance){
     return OSAL_ERROR;
 }
 void dt7_decode(DT7_Instance_t *dt7_instance, uint8_t *buf){}
-enum channel_state get_dt7_sw_state(DT7_Instance_t *dt7_instance, uint8_t sw_index){
-    return channel_none;
+int16_t get_dt7_channel(DT7_Instance_t *dt7_instance, uint8_t channel_index){
+    return 0;
 }
 #endif

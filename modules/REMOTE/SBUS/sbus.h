@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:29:45
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-15 10:20:39
- * @FilePath: /rm_base/modules/REMOTE/SBUS/sbus.h
+ * @LastEditTime: 2025-10-26 17:10:39
+ * @FilePath: \rm_base\modules\REMOTE\SBUS\sbus.h
  * @Description: 
  */
 #ifndef _SBUS_H_
@@ -13,6 +13,9 @@
 #include "osal_def.h"
 #include <stdint.h>
 
+#define SBUS_CHX_BIAS ((uint16_t)1024)
+#define SBUS_CHX_UP   ((uint16_t)240)
+#define SBUS_CHX_DOWN ((uint16_t)1807)
 
 typedef struct
 {
@@ -58,8 +61,8 @@ void sbus_decode(SBUS_Instance_t *sbus_instance,uint8_t *buf);
  * @description: 获取sbus通道状态
  * @param {SBUS_Instance_t} *sbus_instance，sbus实例指针
  * @param {uint8_t} channel_index，通道索引
- * @return {channel_state}，通道状态
+ * @return {int16_t}，通道数据
  */
-enum channel_state get_sbus_channel_state(SBUS_Instance_t *sbus_instance, uint8_t channel_index);
+int16_t get_sbus_channel(SBUS_Instance_t *sbus_instance, uint8_t channel_index);
 
 #endif // _SBUS_H_

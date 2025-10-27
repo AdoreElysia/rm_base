@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:30:15
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-15 18:31:09
- * @FilePath: /rm_base/modules/REMOTE/VT03/vt03.h
+ * @LastEditTime: 2025-10-26 17:11:22
+ * @FilePath: \rm_base\modules\REMOTE\VT03\vt03.h
  * @Description: 
  */
 #ifndef _VT03_H_
@@ -14,6 +14,9 @@
 #include "remote_data.h"
 #include <stdint.h>
 
+#define VT03_CH_VALUE_MIN    ((uint16_t)364)
+#define VT03_CH_VALUE_OFFSET ((uint16_t)1024)
+#define VT03_CH_VALUE_MAX    ((uint16_t)1684)
 
 typedef struct {
     int16_t ch1;     
@@ -46,5 +49,12 @@ osal_status_t vt03_init(VT03_Instance_t *vt03_instance);
  * @return {void}
  */
 void vt03_decode(VT03_Instance_t *vt03_instance, uint8_t *buf);
+/**
+ * @description: 获取VT03通道数据
+ * @param {VT03_Instance_t} *vt03_instance
+ * @param {uint8_t} channel_index
+ * @return {int16_t}
+ */
+int16_t get_vt03_channel(VT03_Instance_t *vt03_instance, uint8_t channel_index);
 
 #endif // _VT03_H_

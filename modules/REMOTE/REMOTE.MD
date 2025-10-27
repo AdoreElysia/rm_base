@@ -155,7 +155,11 @@ REMOTE 遥控器模块是一个基于 OSAL（操作系统抽象层）的遥控�
   ```
   
   ```c
-  uint8_t get_remote_channel_state(uint8_t channel_index, uint8_t is_vt_remote);
+  int16_t get_remote_channel(uint8_t channel_index, uint8_t is_vt_remote);
+  ```
+
+  ```c
+  button_state_t* get_remote_button_state();
   ```
   
   ```c
@@ -164,6 +168,10 @@ REMOTE 遥控器模块是一个基于 OSAL（操作系统抽象层）的遥控�
   
   ```c
   keyboard_state_t * get_remote_keyboard_state(uint8_t is_vt_remote);
+  ```
+
+  ```c
+  uint8_t remote_device_status(uint8_t is_vt_remote);
   ```
   
   ## 任务处理
@@ -209,13 +217,16 @@ REMOTE 遥控器模块是一个基于 OSAL（操作系统抽象层）的遥控�
   }
   
   // 获取遥控器通道状态
-  uint8_t channel_state = get_remote_channel_state(&remote_instance, 1, 0);
+  int16_t channel_state = get_remote_channel(1, 0);
+
+  // 获取按钮状态
+  button_state_t* button_state = get_remote_button_state();
   
   // 获取鼠标状态
-  mouse_state_t* mouse_state = get_remote_mouse_state(&remote_instance, 0);
+  mouse_state_t* mouse_state = get_remote_mouse_state(0);
   
   // 获取键盘状态
-  keyboard_state_t* keyboard_state = get_remote_keyboard_state(&remote_instance, 0);
+  keyboard_state_t* keyboard_state = get_remote_keyboard_state(0);
   ```
   
   ## 工作原理

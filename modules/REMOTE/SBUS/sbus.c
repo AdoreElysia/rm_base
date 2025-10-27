@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 09:29:38
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-01 19:02:52
- * @FilePath: /rm_base/modules/REMOTE/SBUS/sbus.c
+ * @LastEditTime: 2025-10-26 17:10:34
+ * @FilePath: \rm_base\modules\REMOTE\SBUS\sbus.c
  * @Description: 
  */
 #include "sbus.h"
@@ -16,10 +16,6 @@
 
 #define log_tag "sbus"
 #include "shell_log.h"
-
-#define SBUS_CHX_BIAS ((uint16_t)1024)
-#define SBUS_CHX_UP   ((uint16_t)240)
-#define SBUS_CHX_DOWN ((uint16_t)1807)
 
 #if defined (REMOTE_SOURCE) && (REMOTE_SOURCE == 1)
 
@@ -128,26 +124,26 @@ void sbus_decode(SBUS_Instance_t *sbus_instance,uint8_t *buf){
     }
 }
 
-enum channel_state get_sbus_channel_state(SBUS_Instance_t *sbus_instance, uint8_t channel_index)
+int16_t get_sbus_channel(SBUS_Instance_t *sbus_instance, uint8_t channel_index)
 { 
     if (sbus_instance == NULL || channel_index < 1 || channel_index > 16) {
-        return channel_none;
+        return 0;
     }
     
     uint16_t channel_value;
     
     switch (channel_index) {
         case 1:
-            channel_value = sbus_instance->SBUS_CH.CH1 + SBUS_CHX_BIAS; // 前4个通道需要加上偏置
+            channel_value = sbus_instance->SBUS_CH.CH1;
             break;
         case 2:
-            channel_value = sbus_instance->SBUS_CH.CH2 + SBUS_CHX_BIAS;
+            channel_value = sbus_instance->SBUS_CH.CH2;
             break;
         case 3:
-            channel_value = sbus_instance->SBUS_CH.CH3 + SBUS_CHX_BIAS;
+            channel_value = sbus_instance->SBUS_CH.CH3;
             break;
         case 4:
-            channel_value = sbus_instance->SBUS_CH.CH4 + SBUS_CHX_BIAS;
+            channel_value = sbus_instance->SBUS_CH.CH4;
             break;
         case 5:
             channel_value = sbus_instance->SBUS_CH.CH5;
@@ -186,18 +182,10 @@ enum channel_state get_sbus_channel_state(SBUS_Instance_t *sbus_instance, uint8_
             channel_value = sbus_instance->SBUS_CH.CH16;
             break;
         default:
-            return channel_none;
-    }
-
-    if (channel_value <= SBUS_CHX_DOWN) {
-        return channel_down;
-    } else if (channel_value >= SBUS_CHX_UP) {
-        return channel_up;
-    } else if (channel_value == SBUS_CHX_BIAS) {
-        return channel_bias;
-    }
-    
-    return channel_none;
+            channel_value = 0;
+            break;
+    }    
+    return channel_value;
 }
 #else  
 osal_status_t sbus_init(SBUS_Instance_t *sbus_instance){
@@ -206,7 +194,7 @@ osal_status_t sbus_init(SBUS_Instance_t *sbus_instance){
 void sbus_decode(SBUS_Instance_t *sbus_instance,uint8_t *buf){
 
 }
-enum channel_state get_sbus_channel_state(SBUS_Instance_t *sbus_instance, uint8_t channel_index){
-    return channel_none;
+int16_t get_sbus_channel(SBUS_Instance_t *sbus_instance, uint8_t channel_index){
+    return 0;
 }
 #endif

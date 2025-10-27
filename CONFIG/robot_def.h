@@ -2,7 +2,7 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-10-19 22:54:19
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-26 12:48:16
+ * @LastEditTime: 2025-10-26 17:20:33
  * @FilePath: \rm_base\CONFIG\robot_def.h
  * @Description: 
  */
@@ -26,8 +26,7 @@ typedef enum
 // cmd发布的云台控制数据,由gimbal订阅
 typedef struct
 {   
-    float big_yaw;
-    float small_yaw;
+    float yaw;
     float pitch;
     gimbal_mode_e gimbal_mode;
 } Gimbal_Ctrl_Cmd_s;
