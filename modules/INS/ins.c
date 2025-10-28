@@ -2,8 +2,8 @@
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-14 08:49:07
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-01 23:39:36
- * @FilePath: /rm_base/modules/INS/ins.c
+ * @LastEditTime: 2025-10-28 20:29:12
+ * @FilePath: \rm_base\modules\INS\ins.c
  * @Description: INS姿态解算实现
  */
 #include "ins.h"
@@ -14,12 +14,15 @@
 #include "osal_def.h"
 #include "user_lib.h"
 #include <stdint.h>
+#include <string.h>
 
 #define log_tag  "ins"
 #include "shell_log.h"
 
 #define INIT_SAMPLE_COUNT 100       // 初始化采样次数
 #define INS_ACCEL_LPF_COEF 0.0085f  // 加速度低通滤波系数
+
+static INS_t *ins_module = NULL;
 
 void ins_init(INS_t *ins, INS_Param_t *param)
 {
@@ -29,9 +32,12 @@ void ins_init(INS_t *ins, INS_Param_t *param)
         return;
     }
     
+    // 将外部传入的ins指针赋值给模块内部静态变量
+    ins_module = ins;
+    
     osal_status_t status = OSAL_SUCCESS;
     // 初始化imu
-    status = imu_init(&ins->IMU);
+    status = imu_init(&ins_module->IMU);
     if (status != OSAL_SUCCESS)
     {
         LOG_ERROR("Failed to init imu!");
@@ -47,17 +53,21 @@ void ins_init(INS_t *ins, INS_Param_t *param)
     param->flag = 1;
     // 初始化四元数
     float init_quaternion[4] = {0};
-    InitQuaternion(ins,init_quaternion);
+    InitQuaternion(init_quaternion);
     // 初始化EKF
     IMU_QuaternionEKF_Init(init_quaternion, 10.0f, 0.001f, 1000000.0f, 1.0f, 0.0f);
     // 设置加速度低通滤波系数
-    ins->AccelLPF = INS_ACCEL_LPF_COEF;
+    ins_module->AccelLPF = INS_ACCEL_LPF_COEF;
 
     LOG_INFO("INS init successfully");
 }
 
-void InitQuaternion(INS_t *ins,float *init_q4)
+void InitQuaternion(float *init_q4)
 {
+    if (ins_module == NULL){
+        LOG_ERROR("INS module is NULL");    
+        return;
+    }
     float acc_init[3] = {0.0f, 0.0f, 0.0f};
     static const float gravity_norm[3] = {0.0f, 0.0f, 1.0f}; // 导航系重力加速度矢量,归一化后为(0,0,1)
     float axis_rot[3] = {0.0f, 0.0f, 0.0f};                  // 旋转轴
@@ -65,10 +75,10 @@ void InitQuaternion(INS_t *ins,float *init_q4)
     // 读取多次加速度计数据,取平均值作为初始值
     for (uint8_t i = 0; i < INIT_SAMPLE_COUNT; ++i)
     {
-        imu_get_accel(&ins->IMU);
-        acc_init[0] += ins->IMU.data.acc[0];
-        acc_init[1] += ins->IMU.data.acc[1];
-        acc_init[2] += ins->IMU.data.acc[2];
+        imu_get_accel(&ins_module->IMU);
+        acc_init[0] += ins_module->IMU.data.acc[0];
+        acc_init[1] += ins_module->IMU.data.acc[1];
+        acc_init[2] += ins_module->IMU.data.acc[2];
         DWT_Delay(0.001f);
     }
     
@@ -185,4 +195,9 @@ void IMU_Param_Correction(INS_Param_t *param, float gyro[3], float accel[3])
     accel[0] = c_11 * accel_temp[0] + c_12 * accel_temp[1] + c_13 * accel_temp[2];
     accel[1] = c_21 * accel_temp[0] + c_22 * accel_temp[1] + c_23 * accel_temp[2];
     accel[2] = c_31 * accel_temp[0] + c_32 * accel_temp[1] + c_33 * accel_temp[2];
+}
+
+INS_t* get_ins_ptr(void){
+    if (ins_module !=NULL){return ins_module;}
+    return NULL;
 }

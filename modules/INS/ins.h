@@ -1,8 +1,16 @@
 /*
  * @Author: laladuduqq 2807523947@qq.com
+ * @Date: 2025-10-02 14:23:32
+ * @LastEditors: laladuduqq 2807523947@qq.com
+ * @LastEditTime: 2025-10-28 20:28:21
+ * @FilePath: \rm_base\modules\INS\ins.h
+ * @Description: 
+ */
+/*
+ * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-14 08:49:46
  * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-02 17:39:49
+ * @LastEditTime: 2025-10-28 20:20:11
  * @FilePath: \rm_base\modules\INS\ins.h
  * @Description: INS姿态解算模块
  */
@@ -68,10 +76,9 @@ void ins_init(INS_t *ins, INS_Param_t *param);
 void IMU_Param_Correction(INS_Param_t *param, float gyro[3], float accel[3]);
 /**
  * @brief 使用加速度计的数据初始化Roll和Pitch,Yaw置0
- * @param ins INS结构体指针
  * @param init_q4 输出的初始四元数
  */
-void InitQuaternion(INS_t *ins,float *init_q4);
+void InitQuaternion(float *init_q4);
 /**
  * @brief 将三维向量从机体坐标系转换到地球坐标系
  * @param vecBF 机体坐标系向量
@@ -86,5 +93,10 @@ void BodyFrameToEarthFrame(const float *vecBF, float *vecEF, float *q);
  * @param q 四元数
  */
 void EarthFrameToBodyFrame(const float *vecEF, float *vecBF, float *q);
+/**
+ * @brief 获取INS结构体指针
+ * @return {INS_t*},INS结构体指针
+ */
+INS_t* get_ins_ptr(void);
 
 #endif // _INS_H_  
