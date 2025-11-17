@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-10-26 17:10:39
  * @FilePath: \rm_base\modules\REMOTE\SBUS\sbus.h
- * @Description: 
+ * @Description:
  */
 #ifndef _SBUS_H_
 #define _SBUS_H_
@@ -19,30 +19,31 @@
 
 typedef struct
 {
-    int16_t CH1;//1通道
-    int16_t CH2;//2通道
-    int16_t CH3;//3通道
-    int16_t CH4;//4通道
-    uint16_t CH5;//5通道
-    uint16_t CH6;//6通道
-    uint16_t CH7;//7通道
-    uint16_t CH8;//8通道
-    uint16_t CH9;//9通道
-    uint16_t CH10;//10通道
-    uint16_t CH11;//11通道
-    uint16_t CH12;//12通道
-    uint16_t CH13;//13通道
-    uint16_t CH14;//14通道
-    uint16_t CH15;//15通道
-    uint16_t CH16;//16通道
-    uint8_t ConnectState;   //连接的标志
-}SBUS_CH_Struct;
+    int16_t  CH1;          // 1通道
+    int16_t  CH2;          // 2通道
+    int16_t  CH3;          // 3通道
+    int16_t  CH4;          // 4通道
+    uint16_t CH5;          // 5通道
+    uint16_t CH6;          // 6通道
+    uint16_t CH7;          // 7通道
+    uint16_t CH8;          // 8通道
+    uint16_t CH9;          // 9通道
+    uint16_t CH10;         // 10通道
+    uint16_t CH11;         // 11通道
+    uint16_t CH12;         // 12通道
+    uint16_t CH13;         // 13通道
+    uint16_t CH14;         // 14通道
+    uint16_t CH15;         // 15通道
+    uint16_t CH16;         // 16通道
+    uint8_t  ConnectState; // 连接的标志
+} SBUS_CH_Struct;
 
-typedef struct{
+typedef struct
+{
     SBUS_CH_Struct SBUS_CH;
-    uint8_t offline_index; // 离线索引
-    UART_Device *uart_device; // UART实例
-}SBUS_Instance_t;
+    uint8_t        offline_index; // 离线索引
+    UART_Device   *uart_device;   // UART实例
+} SBUS_Instance_t;
 
 /**
  * @description: sbus初始化
@@ -56,7 +57,7 @@ osal_status_t sbus_init(SBUS_Instance_t *sbus_instance);
  * @param {uint8_t} *buf，缓冲区指针
  * @return {*}
  */
-void sbus_decode(SBUS_Instance_t *sbus_instance,uint8_t *buf);
+void sbus_decode(SBUS_Instance_t *sbus_instance, uint8_t *buf);
 /**
  * @description: 获取sbus通道状态
  * @param {SBUS_Instance_t} *sbus_instance，sbus实例指针

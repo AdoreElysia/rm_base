@@ -14,10 +14,11 @@
 /* ThreadX下的中断临界区实现 */
 osal_status_t osal_enter_critical(osal_critical_state_t *crit)
 {
-    if (crit == NULL) {
+    if (crit == NULL)
+    {
         return OSAL_INVALID_PARAM;
     }
-    
+
     /* 使用ThreadX宏方法保存中断状态并禁用中断 */
     TX_INTERRUPT_SAVE_AREA
     TX_DISABLE
@@ -27,10 +28,11 @@ osal_status_t osal_enter_critical(osal_critical_state_t *crit)
 
 osal_status_t osal_exit_critical(osal_critical_state_t *crit)
 {
-    if (crit == NULL) {
+    if (crit == NULL)
+    {
         return OSAL_INVALID_PARAM;
     }
-    
+
     /* 使用ThreadX宏方法恢复中断状态 */
     TX_INTERRUPT_SAVE_AREA
     interrupt_save = *crit;
@@ -43,15 +45,19 @@ osal_status_t osal_exit_critical(osal_critical_state_t *crit)
 /* FreeRTOS下的中断临界区实现 */
 osal_status_t osal_enter_critical(osal_critical_state_t *crit)
 {
-    if (crit == NULL) {
+    if (crit == NULL)
+    {
         return OSAL_INVALID_PARAM;
     }
-    
+
     /* 判断是否在中断环境中 */
-    if (xPortIsInsideInterrupt()) {
+    if (xPortIsInsideInterrupt())
+    {
         /* 在中断中使用中断安全的API */
         *crit = taskENTER_CRITICAL_FROM_ISR();
-    } else {
+    }
+    else
+    {
         /* 在任务中使用普通API */
         taskENTER_CRITICAL();
         *crit = 0; /* 在任务环境中不需要保存状态 */
@@ -61,15 +67,19 @@ osal_status_t osal_enter_critical(osal_critical_state_t *crit)
 
 osal_status_t osal_exit_critical(osal_critical_state_t *crit)
 {
-    if (crit == NULL) {
+    if (crit == NULL)
+    {
         return OSAL_INVALID_PARAM;
     }
-    
+
     /* 判断是否在中断环境中 */
-    if (xPortIsInsideInterrupt()) {
+    if (xPortIsInsideInterrupt())
+    {
         /* 在中断中使用中断安全的API */
         taskEXIT_CRITICAL_FROM_ISR(*crit);
-    } else {
+    }
+    else
+    {
         /* 在任务中使用普通API */
         taskEXIT_CRITICAL();
     }

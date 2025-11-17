@@ -13,9 +13,9 @@
 #ifndef _CONTROLLER_H
 #define _CONTROLLER_H
 
+#include "math.h"
 #include "stdint.h"
 #include "stdlib.h"
-#include "math.h"
 
 #ifndef abs
 #define abs(x) ((x > 0) ? x : -x)
@@ -24,27 +24,27 @@
 // PID 优化环节使能标志位,通过位与可以判断启用的优化环节;也可以改成位域的形式
 typedef enum
 {
-    PID_IMPROVE_NONE = 0x00,                // 0b00000000
-    PID_Integral_Limit = 0x01,              // 0b00000001
-    PID_Derivative_On_Measurement = 0x02,   // 0b00000010
-    PID_Trapezoid_Intergral = 0x04,         // 0b00000100
+    PID_IMPROVE_NONE                = 0x00, // 0b00000000
+    PID_Integral_Limit              = 0x01, // 0b00000001
+    PID_Derivative_On_Measurement   = 0x02, // 0b00000010
+    PID_Trapezoid_Intergral         = 0x04, // 0b00000100
     PID_Proportional_On_Measurement = 0x08, // 0b00001000
-    PID_OutputFilter = 0x10,                // 0b00010000
-    PID_ChangingIntegrationRate = 0x20,     // 0b00100000
-    PID_DerivativeFilter = 0x40,            // 0b01000000
-    PID_ErrorHandle = 0x80,                 // 0b10000000
+    PID_OutputFilter                = 0x10, // 0b00010000
+    PID_ChangingIntegrationRate     = 0x20, // 0b00100000
+    PID_DerivativeFilter            = 0x40, // 0b01000000
+    PID_ErrorHandle                 = 0x80, // 0b10000000
 } PID_Improvement_e;
 
 /* PID 报错类型枚举*/
 typedef enum errorType_e
 {
-    PID_ERROR_NONE = 0x00U,
+    PID_ERROR_NONE          = 0x00U,
     PID_MOTOR_BLOCKED_ERROR = 0x01U
 } ErrorType_e;
 
 typedef struct
 {
-    uint64_t ERRORCount;
+    uint64_t    ERRORCount;
     ErrorType_e ERRORType;
 } PID_ErrorHandler_t;
 
@@ -61,11 +61,11 @@ typedef struct
 
     // improve parameter
     PID_Improvement_e Improve;
-    float IntegralLimit;     // 积分限幅
-    float CoefA;             // 变速积分 For Changing Integral
-    float CoefB;             // 变速积分 ITerm = Err*((A-abs(err)+B)/A)  when B<|err|<A+B
-    float Output_LPF_RC;     // 输出滤波器 RC = 1/omegac
-    float Derivative_LPF_RC; // 微分滤波器系数
+    float             IntegralLimit; // 积分限幅
+    float             CoefA;         // 变速积分 For Changing Integral
+    float             CoefB;         // 变速积分 ITerm = Err*((A-abs(err)+B)/A)  when B<|err|<A+B
+    float             Output_LPF_RC; // 输出滤波器 RC = 1/omegac
+    float             Derivative_LPF_RC; // 微分滤波器系数
 
     //-----------------------------------
     // for calculating
@@ -87,7 +87,7 @@ typedef struct
     float Ref;
 
     uint32_t DWT_CNT;
-    float dt;
+    float    dt;
 
     PID_ErrorHandler_t ERRORHandler;
 } PIDInstance;
@@ -104,11 +104,11 @@ typedef struct // config parameter
 
     // improve parameter
     PID_Improvement_e Improve;
-    float IntegralLimit; // 积分限幅
-    float CoefA;         // AB为变速积分参数,变速积分实际上就引入了积分分离
-    float CoefB;         // ITerm = Err*((A-abs(err)+B)/A)  when B<|err|<A+B
-    float Output_LPF_RC; // RC = 1/omegac
-    float Derivative_LPF_RC;
+    float             IntegralLimit; // 积分限幅
+    float             CoefA;         // AB为变速积分参数,变速积分实际上就引入了积分分离
+    float             CoefB;         // ITerm = Err*((A-abs(err)+B)/A)  when B<|err|<A+B
+    float             Output_LPF_RC; // RC = 1/omegac
+    float             Derivative_LPF_RC;
 } PID_Init_Config_s;
 
 /**

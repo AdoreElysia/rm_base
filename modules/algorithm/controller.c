@@ -14,8 +14,6 @@
 
 #include "bsp_dwt.h"
 
-
-
 /* ----------------------------下面是pid优化环节的实现---------------------------- */
 
 // 梯形积分
@@ -43,7 +41,7 @@ static void f_Changing_Integration_Rate(PIDInstance *pid)
 static void f_Integral_Limit(PIDInstance *pid)
 {
     static float temp_Output, temp_Iout;
-    temp_Iout = pid->Iout + pid->ITerm;
+    temp_Iout   = pid->Iout + pid->ITerm;
     temp_Output = pid->Pout + pid->Iout + pid->Dout;
     if (abs(temp_Output) > pid->MaxOut)
     {
@@ -56,12 +54,12 @@ static void f_Integral_Limit(PIDInstance *pid)
     if (temp_Iout > pid->IntegralLimit)
     {
         pid->ITerm = 0;
-        pid->Iout = pid->IntegralLimit;
+        pid->Iout  = pid->IntegralLimit;
     }
     if (temp_Iout < -pid->IntegralLimit)
     {
         pid->ITerm = 0;
-        pid->Iout = -pid->IntegralLimit;
+        pid->Iout  = -pid->IntegralLimit;
     }
 }
 
@@ -113,7 +111,7 @@ static void f_PID_ErrorHandle(PIDInstance *pid)
     else
     {
         pid->ERRORHandler.ERRORCount = 0;
-        pid->ERRORHandler.ERRORType = PID_ERROR_NONE;
+        pid->ERRORHandler.ERRORType  = PID_ERROR_NONE;
     }
 
     if (pid->ERRORHandler.ERRORCount > 500)
@@ -133,22 +131,20 @@ static void f_PID_ErrorHandle(PIDInstance *pid)
  */
 void PIDInit(PIDInstance *pid, PID_Init_Config_s *config)
 {
-    
+
     memset(pid, 0, sizeof(PIDInstance));
     // utilize the quality of struct that its memeory is continuous
     memcpy(pid, config, sizeof(PID_Init_Config_s));
 
-    pid->Kp = config->Kp;
-    pid->Ki = config->Ki;
-    pid->Kd = config->Kd;
-    pid->DeadBand = config->DeadBand;
-    pid->Improve = config->Improve;
-    pid->MaxOut = config->MaxOut;
+    pid->Kp            = config->Kp;
+    pid->Ki            = config->Ki;
+    pid->Kd            = config->Kd;
+    pid->DeadBand      = config->DeadBand;
+    pid->Improve       = config->Improve;
+    pid->MaxOut        = config->MaxOut;
     pid->IntegralLimit = config->IntegralLimit;
     // set rest of memory to 0
 }
-
-
 
 /**
  * @brief          PID计算
@@ -167,16 +163,16 @@ float PIDCalculate(PIDInstance *pid, float measure, float ref)
 
     // 保存上次的测量值和误差,计算当前error
     pid->Measure = measure;
-    pid->Ref = ref;
-    pid->Err = pid->Ref - pid->Measure;
+    pid->Ref     = ref;
+    pid->Err     = pid->Ref - pid->Measure;
 
     // 如果在死区外,则计算PID
     if (abs(pid->Err) > pid->DeadBand)
     {
         // 基本的pid计算,使用位置式
-        pid->Pout = pid->Kp * pid->Err;
+        pid->Pout  = pid->Kp * pid->Err;
         pid->ITerm = pid->Ki * pid->Err * pid->dt;
-        pid->Dout = pid->Kd * (pid->Err - pid->Last_Err) / pid->dt;
+        pid->Dout  = pid->Kd * (pid->Err - pid->Last_Err) / pid->dt;
 
         // 梯形积分
         if (pid->Improve & PID_Trapezoid_Intergral)
@@ -207,25 +203,24 @@ float PIDCalculate(PIDInstance *pid, float measure, float ref)
     else // 进入死区, 则清空积分和输出
     {
         pid->Output = 0;
-        pid->ITerm = 0;
+        pid->ITerm  = 0;
     }
 
     // 保存当前数据,用于下次计算
     pid->Last_Measure = pid->Measure;
-    pid->Last_Output = pid->Output;
-    pid->Last_Dout = pid->Dout;
-    pid->Last_Err = pid->Err;
-    pid->Last_ITerm = pid->ITerm;
+    pid->Last_Output  = pid->Output;
+    pid->Last_Dout    = pid->Dout;
+    pid->Last_Err     = pid->Err;
+    pid->Last_ITerm   = pid->ITerm;
 
-    //堵转保护
+    // 堵转保护
     if (pid->ERRORHandler.ERRORType == PID_MOTOR_BLOCKED_ERROR)
     {
-        pid->Output=0;
+        pid->Output = 0;
         return pid->Output;
     }
     else
     {
         return pid->Output;
     }
-
 }

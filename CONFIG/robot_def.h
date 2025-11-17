@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-10-26 17:20:33
  * @FilePath: \rm_base\CONFIG\robot_def.h
- * @Description: 
+ * @Description:
  */
 #ifndef _ROBOT_DEF_H_
 #define _ROBOT_DEF_H_
@@ -25,9 +25,9 @@ typedef enum
 
 // cmd发布的云台控制数据,由gimbal订阅
 typedef struct
-{   
-    float yaw;
-    float pitch;
+{
+    float         yaw;
+    float         pitch;
     gimbal_mode_e gimbal_mode;
 } Gimbal_Ctrl_Cmd_s;
 
@@ -52,8 +52,8 @@ typedef enum
 // cmd发布的发射控制数据,由shoot订阅
 typedef struct
 {
-    shoot_mode_e shoot_mode;
-    loader_mode_e load_mode;
+    shoot_mode_e    shoot_mode;
+    loader_mode_e   load_mode;
     friction_mode_e friction_mode;
 } Shoot_Ctrl_Cmd_s;
 
@@ -70,13 +70,13 @@ typedef enum
 typedef struct
 {
     // 控制部分
-    float vx;           // 前进方向速度
-    float vy;           // 横移方向速度
-    float wz;           // 旋转速度
-    float offset_angle;             // 对齐角度
-    chassis_mode_e chassis_mode;    // 底盘模式
-    uint8_t reserved_1; 
-    uint8_t reserved_2;    
+    float          vx;           // 前进方向速度
+    float          vy;           // 横移方向速度
+    float          wz;           // 旋转速度
+    float          offset_angle; // 对齐角度
+    chassis_mode_e chassis_mode; // 底盘模式
+    uint8_t        reserved_1;
+    uint8_t        reserved_2;
 } Chassis_Ctrl_Cmd_s;
 
 typedef struct

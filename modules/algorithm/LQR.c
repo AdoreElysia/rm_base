@@ -12,7 +12,8 @@
 #include <arm_math.h>
 
 // 角度转弧度
-static float degreesToRadians(float degrees) {
+static float degreesToRadians(float degrees)
+{
     return degrees * (PI / 180.0f);
 }
 
@@ -36,7 +37,7 @@ static void LQR_ErrorHandle(LQRInstance *lqr)
     {
         // 误差恢复正常，重置错误计数和错误类型
         lqr->ErrorHandler.ERRORCount = 0;
-        lqr->ErrorHandler.ERRORType = LQR_ERROR_NONE;
+        lqr->ErrorHandler.ERRORType  = LQR_ERROR_NONE;
     }
 
     // 如果错误计数超过阈值（500次），则标记为电机堵转错误
@@ -51,9 +52,11 @@ static void LQR_ErrorHandle(LQRInstance *lqr)
  * @param lqr    LQR实例指针
  * @param config LQR初始化配置
  */
-void LQRInit(LQRInstance *lqr, LQR_Init_Config_s *config) {
+void LQRInit(LQRInstance *lqr, LQR_Init_Config_s *config)
+{
     // 参数检查
-    if (lqr == NULL || config == NULL) {
+    if (lqr == NULL || config == NULL)
+    {
         return;
     }
     // 清零整个结构体
@@ -61,11 +64,13 @@ void LQRInit(LQRInstance *lqr, LQR_Init_Config_s *config) {
     // 初始化基本参数
     lqr->state_dim = config->state_dim;
     // 检查状态维度有效性
-    if (lqr->state_dim < 1 || lqr->state_dim > 2) {
+    if (lqr->state_dim < 1 || lqr->state_dim > 2)
+    {
         return;
     }
     // 复制增益矩阵
-    for (uint8_t i = 0; i < lqr->state_dim; i++) {
+    for (uint8_t i = 0; i < lqr->state_dim; i++)
+    {
         lqr->K[i] = config->K[i];
     }
     // 初始化输出相关参数
@@ -73,12 +78,14 @@ void LQRInit(LQRInstance *lqr, LQR_Init_Config_s *config) {
     lqr->output_min = config->output_min;
     // 初始化错误处理参数
     lqr->ErrorHandler.ERRORCount = 0;
-    lqr->ErrorHandler.ERRORType = LQR_ERROR_NONE;
-    lqr->feedforward_func = config->feedforward_func;
+    lqr->ErrorHandler.ERRORType  = LQR_ERROR_NONE;
+    lqr->feedforward_func        = config->feedforward_func;
 }
 
-static float calculateOutput(LQRInstance *lqr, float degree, float angular_velocity, float ref) {
-    if (lqr == NULL) {
+static float calculateOutput(LQRInstance *lqr, float degree, float angular_velocity, float ref)
+{
+    if (lqr == NULL)
+    {
         return 0.0f;
     }
 
@@ -87,39 +94,44 @@ static float calculateOutput(LQRInstance *lqr, float degree, float angular_veloc
     // 保存状态值
     lqr->state[0] = degree;
     lqr->state[1] = angular_velocity;
-    
+
     // 将参考值转换为弧度
     float rad_ref = degreesToRadians(ref);
-    
-    if (lqr->state_dim == 1) {
+
+    if (lqr->state_dim == 1)
+    {
         // 单状态情况：角速度控制
         float rad_angular_velocity = degreesToRadians(angular_velocity);
-        lqr->err = rad_angular_velocity - rad_ref;
-        lqr->output = -(lqr->K[0] * lqr->err);
+        lqr->err                   = rad_angular_velocity - rad_ref;
+        lqr->output                = -(lqr->K[0] * lqr->err);
     }
-    else if (lqr->state_dim == 2) {
+    else if (lqr->state_dim == 2)
+    {
         // 双状态情况：角度和角速度控制
-        float rad_degree= degreesToRadians(degree);
-        //float rad_angular_velocity = degreesToRadians(angular_velocity);  
-        lqr->err = rad_degree - rad_ref;
+        float rad_degree = degreesToRadians(degree);
+        // float rad_angular_velocity = degreesToRadians(angular_velocity);
+        lqr->err    = rad_degree - rad_ref;
         lqr->output = -(lqr->K[0] * lqr->err) - lqr->K[1] * angular_velocity;
     }
 
     // 调用前馈函数（如果不为NULL）
-    if (lqr->feedforward_func != NULL) {
-        float feedforward = lqr->feedforward_func(ref,degree,angular_velocity);
+    if (lqr->feedforward_func != NULL)
+    {
+        float feedforward = lqr->feedforward_func(ref, degree, angular_velocity);
         lqr->output += feedforward;
     }
 
     // 输出限幅
     VAL_LIMIT(lqr->output, lqr->output_min, lqr->output_max);
-    
+
     return lqr->output;
 }
 
-float LQRCalculate(LQRInstance *lqr, float degree, float angular_velocity, float ref) {
+float LQRCalculate(LQRInstance *lqr, float degree, float angular_velocity, float ref)
+{
     // 参数检查
-    if (lqr == NULL || lqr->state_dim < 1 || lqr->state_dim > 2) {
+    if (lqr == NULL || lqr->state_dim < 1 || lqr->state_dim > 2)
+    {
         return 0.0f;
     }
 
@@ -127,20 +139,21 @@ float LQRCalculate(LQRInstance *lqr, float degree, float angular_velocity, float
     {
         lqr->Measure = angular_velocity;
     }
-    else if (lqr->state_dim == 2) {
+    else if (lqr->state_dim == 2)
+    {
         lqr->Measure = degree;
     }
-    
+
     // 执行堵转检测
     LQR_ErrorHandle(lqr);
 
     float output = calculateOutput(lqr, degree, angular_velocity, ref);
-    
+
     // 如果检测到堵转错误，则输出为0
     if (lqr->ErrorHandler.ERRORType == LQR_MOTOR_BLOCKED_ERROR)
     {
         output = 0.0f;
     }
-    
+
     return output;
 }

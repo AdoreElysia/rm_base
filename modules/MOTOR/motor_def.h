@@ -1,9 +1,9 @@
 #ifndef __MOTOR_DEF_H
 #define __MOTOR_DEF_H
 
-#include "controller.h"
 #include "LQR.h"
 #include "bsp_can.h"
+#include "controller.h"
 #include "offline.h"
 
 /**
@@ -12,15 +12,15 @@
  */
 typedef enum
 {
-    OPEN_LOOP = 0x0,              // 0b0000
-    CURRENT_LOOP = 0x1,           // 0b0001 -> 1<<0
-    SPEED_LOOP = 0x2,             // 0b0010 -> 1<<1
-    ANGLE_LOOP = 0x4,             // 0b0100 -> 1<<2
+    OPEN_LOOP    = 0x0, // 0b0000
+    CURRENT_LOOP = 0x1, // 0b0001 -> 1<<0
+    SPEED_LOOP   = 0x2, // 0b0010 -> 1<<1
+    ANGLE_LOOP   = 0x4, // 0b0100 -> 1<<2
 
     // 组合值保持原有逻辑
     SPEED_AND_CURRENT_LOOP = 0x3, // 0b0011
-    ANGLE_AND_SPEED_LOOP = 0x6,   // 0b0110
-    ALL_THREE_LOOP = 0x7,         // 0b0111
+    ANGLE_AND_SPEED_LOOP   = 0x6, // 0b0110
+    ALL_THREE_LOOP         = 0x7, // 0b0111
 } Closeloop_Type_e;
 /* 反馈来源设定,若设为OTHER_FEED则需要指定数据来源指针 */
 typedef enum
@@ -31,19 +31,19 @@ typedef enum
 /* 电机正反转标志 */
 typedef enum
 {
-    MOTOR_DIRECTION_NORMAL = 0,
+    MOTOR_DIRECTION_NORMAL  = 0,
     MOTOR_DIRECTION_REVERSE = 1
 } Motor_Reverse_Flag_e;
 /* 反馈量正反标志 */
 typedef enum
 {
-    FEEDBACK_DIRECTION_NORMAL = 0,
+    FEEDBACK_DIRECTION_NORMAL  = 0,
     FEEDBACK_DIRECTION_REVERSE = 1
 } Feedback_Reverse_Flag_e;
 /* 电机工作状态 */
 typedef enum
 {
-    MOTOR_STOP = 0,
+    MOTOR_STOP    = 0,
     MOTOR_ENALBED = 1,
 } Motor_Working_Type_e;
 /* 控制算法类型 */
@@ -56,35 +56,35 @@ typedef enum
 /* 电机功率控制开关*/
 typedef enum
 {
-    PowerControlState_OFF=0,
+    PowerControlState_OFF = 0,
     PowerControlState_ON,
 } PowerControlState_e;
 
 /* 电机控制设置,包括闭环类型,反转标志和反馈来源 */
 typedef struct
 {
-    Closeloop_Type_e outer_loop_type;              // 最外层的闭环,未设置时默认为最高级的闭环
-    Closeloop_Type_e close_loop_type;              // 使用几个闭环(串级)
-    Motor_Reverse_Flag_e motor_reverse_flag;       // 是否反转
-    Feedback_Reverse_Flag_e feedback_reverse_flag; // 反馈是否反向
-    Feedback_Source_e angle_feedback_source;       // 角度反馈类型
-    Feedback_Source_e speed_feedback_source;       // 速度反馈类型
-    Control_Algorithm_Type_e control_algorithm;    // 控制算法类型
-    PowerControlState_e PowerControlState;         // 功率开关
+    Closeloop_Type_e         outer_loop_type;       // 最外层的闭环,未设置时默认为最高级的闭环
+    Closeloop_Type_e         close_loop_type;       // 使用几个闭环(串级)
+    Motor_Reverse_Flag_e     motor_reverse_flag;    // 是否反转
+    Feedback_Reverse_Flag_e  feedback_reverse_flag; // 反馈是否反向
+    Feedback_Source_e        angle_feedback_source; // 角度反馈类型
+    Feedback_Source_e        speed_feedback_source; // 速度反馈类型
+    Control_Algorithm_Type_e control_algorithm;     // 控制算法类型
+    PowerControlState_e      PowerControlState;     // 功率开关
 
 } Motor_Control_Setting_s;
 
 /* 电机控制器,包括其他来源的反馈数据指针,3环控制器和电机的参考输入*/
 typedef struct
 {
-    float *other_angle_feedback_ptr;  // 其他反馈来源的反馈数据指针
+    float *other_angle_feedback_ptr; // 其他反馈来源的反馈数据指针
     float *other_speed_feedback_ptr;
 
-    PIDInstance speed_PID;            // PID速度环控制器实例
-    PIDInstance angle_PID;            // PID角度环控制器实例
-    LQRInstance lqr;                  // LQR控制器实例
+    PIDInstance speed_PID; // PID速度环控制器实例
+    PIDInstance angle_PID; // PID角度环控制器实例
+    LQRInstance lqr;       // LQR控制器实例
 
-    float ref;                        // 参考输入
+    float ref; // 参考输入
 } Motor_Controller_s;
 
 /* 电机类型枚举 */
@@ -104,14 +104,13 @@ typedef enum
 /* 电机基本信息结构体，包含电机类型、减速比和扭矩常数等 */
 typedef struct
 {
-    Motor_Type_e motor_type;        // 电机类型
-    float gear_ratio;               // 减速比
-    float torque_constant;          // 减速前扭矩常数 (Nm/A)
-    float max_current;              // 最大电流 (A)
-    float max_torque;               // 最大扭矩，减速前 (Nm)
-    float max_speed;                // 最大转速，减速前 (rpm)
+    Motor_Type_e motor_type;      // 电机类型
+    float        gear_ratio;      // 减速比
+    float        torque_constant; // 减速前扭矩常数 (Nm/A)
+    float        max_current;     // 最大电流 (A)
+    float        max_torque;      // 最大扭矩，减速前 (Nm)
+    float        max_speed;       // 最大转速，减速前 (rpm)
 } Motor_Info_s;
-
 
 /**
  * @brief 电机控制器初始化结构体,包括三环PID的配置以及两个反馈数据来源指针
@@ -132,11 +131,11 @@ typedef struct
 /* 用于初始化CAN电机的结构体,各类电机通用 */
 typedef struct
 {
-    Motor_Controller_Init_s controller_param_init_config;
-    Motor_Control_Setting_s controller_setting_init_config;
-    Motor_Info_s Motor_init_Info;
+    Motor_Controller_Init_s  controller_param_init_config;
+    Motor_Control_Setting_s  controller_setting_init_config;
+    Motor_Info_s             Motor_init_Info;
     Can_Device_Init_Config_s can_init_config;
-    OfflineDeviceInit_t offline_device_motor;
+    OfflineDeviceInit_t      offline_device_motor;
 } Motor_Init_Config_s;
 
 #endif // MOTOR_DEF_H

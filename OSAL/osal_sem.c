@@ -5,12 +5,15 @@
 osal_status_t osal_sem_create(osal_sem_t *sem, const char *name, unsigned int initial_count)
 {
     UINT result;
-    
-    result = tx_semaphore_create((TX_SEMAPHORE*)sem, (CHAR*)name, initial_count);
-    
-    if (result == TX_SUCCESS) {
+
+    result = tx_semaphore_create((TX_SEMAPHORE *)sem, (CHAR *)name, initial_count);
+
+    if (result == TX_SUCCESS)
+    {
         return OSAL_SUCCESS;
-    } else {
+    }
+    else
+    {
         return OSAL_ERROR;
     }
 }
@@ -25,18 +28,23 @@ osal_status_t osal_sem_wait(osal_sem_t *sem, osal_tick_t timeout)
 
     if (timeout == OSAL_WAIT_FOREVER)
     {
-        result = tx_semaphore_get((TX_SEMAPHORE*)sem, TX_WAIT_FOREVER);
+        result = tx_semaphore_get((TX_SEMAPHORE *)sem, TX_WAIT_FOREVER);
     }
     else
     {
-        result = tx_semaphore_get((TX_SEMAPHORE*)sem, timeout);
+        result = tx_semaphore_get((TX_SEMAPHORE *)sem, timeout);
     }
-    
-    if (result == TX_SUCCESS) {
+
+    if (result == TX_SUCCESS)
+    {
         return OSAL_SUCCESS;
-    } else if (result == TX_NO_INSTANCE) {
+    }
+    else if (result == TX_NO_INSTANCE)
+    {
         return OSAL_TIMEOUT;
-    } else {
+    }
+    else
+    {
         return OSAL_ERROR;
     }
 }
@@ -48,12 +56,15 @@ osal_status_t osal_sem_post(osal_sem_t *sem)
         return OSAL_INVALID_PARAM;
     }
     UINT result;
-    
-    result = tx_semaphore_put((TX_SEMAPHORE*)sem);
-    
-    if (result == TX_SUCCESS) {
+
+    result = tx_semaphore_put((TX_SEMAPHORE *)sem);
+
+    if (result == TX_SUCCESS)
+    {
         return OSAL_SUCCESS;
-    } else {
+    }
+    else
+    {
         return OSAL_ERROR;
     }
 }
@@ -65,12 +76,15 @@ osal_status_t osal_sem_delete(osal_sem_t *sem)
         return OSAL_INVALID_PARAM;
     }
     UINT result;
-    
-    result = tx_semaphore_delete((TX_SEMAPHORE*)sem);
-    
-    if (result == TX_SUCCESS) {
+
+    result = tx_semaphore_delete((TX_SEMAPHORE *)sem);
+
+    if (result == TX_SUCCESS)
+    {
         return OSAL_SUCCESS;
-    } else {
+    }
+    else
+    {
         return OSAL_ERROR;
     }
 }
@@ -81,10 +95,13 @@ osal_status_t osal_sem_create(osal_sem_t *sem, const char *name, unsigned int in
 {
     // 使用静态内存分配方式创建计数信号量
     sem->sem_handle = xSemaphoreCreateCountingStatic(UINT_MAX, initial_count, &sem->sem_buffer);
-    
-    if (sem->sem_handle != NULL) {
+
+    if (sem->sem_handle != NULL)
+    {
         return OSAL_SUCCESS;
-    } else {
+    }
+    else
+    {
         return OSAL_ERROR;
     }
 }
@@ -92,36 +109,49 @@ osal_status_t osal_sem_create(osal_sem_t *sem, const char *name, unsigned int in
 osal_status_t osal_sem_wait(osal_sem_t *sem, osal_tick_t timeout)
 {
     // 检查参数有效性
-    if (!sem) {
+    if (!sem)
+    {
         return OSAL_INVALID_PARAM;
     }
 
     if (sem->sem_handle != NULL)
-    { 
+    {
         BaseType_t result;
-    
+
         // 判断是否在中断环境中
-        if (xPortIsInsideInterrupt()) {
+        if (xPortIsInsideInterrupt())
+        {
             BaseType_t xHigherPriorityTaskWoken = pdFALSE;
             // 在中断中只支持立即获取
-            if (timeout == OSAL_NO_WAIT) {
+            if (timeout == OSAL_NO_WAIT)
+            {
                 result = xSemaphoreTakeFromISR(sem->sem_handle, &xHigherPriorityTaskWoken);
                 portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-            } else {
+            }
+            else
+            {
                 // 中断中不支持阻塞操作，返回错误
                 return OSAL_ERROR;
             }
-        } else {
-            if (timeout == OSAL_WAIT_FOREVER) {
+        }
+        else
+        {
+            if (timeout == OSAL_WAIT_FOREVER)
+            {
                 result = xSemaphoreTake(sem->sem_handle, portMAX_DELAY);
-            } else {
+            }
+            else
+            {
                 result = xSemaphoreTake(sem->sem_handle, timeout);
             }
         }
-        
-        if (result == pdTRUE) {
+
+        if (result == pdTRUE)
+        {
             return OSAL_SUCCESS;
-        } else {
+        }
+        else
+        {
             return OSAL_TIMEOUT;
         }
     }
@@ -134,25 +164,32 @@ osal_status_t osal_sem_wait(osal_sem_t *sem, osal_tick_t timeout)
 osal_status_t osal_sem_post(osal_sem_t *sem)
 {
     // 检查参数有效性
-    if (!sem) {
+    if (!sem)
+    {
         return OSAL_INVALID_PARAM;
     }
     if (sem->sem_handle != NULL)
     {
         BaseType_t result;
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        
+
         // 判断是否在中断环境中
-        if (xPortIsInsideInterrupt()) {
+        if (xPortIsInsideInterrupt())
+        {
             result = xSemaphoreGiveFromISR(sem->sem_handle, &xHigherPriorityTaskWoken);
             portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-        } else {
+        }
+        else
+        {
             result = xSemaphoreGive(sem->sem_handle);
         }
-        
-        if (result == pdTRUE) {
+
+        if (result == pdTRUE)
+        {
             return OSAL_SUCCESS;
-        } else {
+        }
+        else
+        {
             return OSAL_ERROR;
         }
     }

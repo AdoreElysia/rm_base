@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-10-26 17:11:01
  * @FilePath: \rm_base\modules\REMOTE\DT7\dt7.h
- * @Description: 
+ * @Description:
  */
 #ifndef _DT7_H_
 #define _DT7_H_
@@ -13,32 +13,33 @@
 #include "remote_data.h"
 #include <stdint.h>
 
-#define DT7_CH_VALUE_MIN ((uint16_t)364)
+#define DT7_CH_VALUE_MIN    ((uint16_t)364)
 #define DT7_CH_VALUE_OFFSET ((uint16_t)1024)
-#define DT7_CH_VALUE_MAX ((uint16_t)1684)
+#define DT7_CH_VALUE_MAX    ((uint16_t)1684)
 
-#define DT7_SW_UP ((uint16_t)1)   // 开关向上时的值
-#define DT7_SW_MID ((uint16_t)3)  // 开关中间时的值
-#define DT7_SW_DOWN ((uint16_t)2) // 开关向下时的值
+#define DT7_SW_UP           ((uint16_t)1) // 开关向上时的值
+#define DT7_SW_MID          ((uint16_t)3) // 开关中间时的值
+#define DT7_SW_DOWN         ((uint16_t)2) // 开关向下时的值
 
-typedef struct {
-    int16_t ch1;
-    int16_t ch2;
-    int16_t ch3;
-    int16_t ch4;
-    uint8_t sw1;
-    uint8_t sw2;
-    mouse_state_t mouse_state;
+typedef struct
+{
+    int16_t          ch1;
+    int16_t          ch2;
+    int16_t          ch3;
+    int16_t          ch4;
+    uint8_t          sw1;
+    uint8_t          sw2;
+    mouse_state_t    mouse_state;
     keyboard_state_t keyboard_state;
-    int16_t wheel;
+    int16_t          wheel;
 } DT7_INPUT_t;
 
 typedef struct
 {
-  DT7_INPUT_t dt7_input; 
-  uint8_t offline_index; // 离线索引
-  UART_Device *uart_device; // UART实例
-}DT7_Instance_t;
+    DT7_INPUT_t  dt7_input;
+    uint8_t      offline_index; // 离线索引
+    UART_Device *uart_device;   // UART实例
+} DT7_Instance_t;
 
 /**
  * @description: dt7遥控器初始化

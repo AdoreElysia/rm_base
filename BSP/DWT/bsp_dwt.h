@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-09-08 18:07:17
  * @FilePath: /rm_base/BSP/DWT/bsp_dwt.h
- * @Description: 
+ * @Description:
  */
 #ifndef _BSP_DWT_H_
 #define _BSP_DWT_H_
@@ -65,7 +65,8 @@ uint64_t DWT_GetTimeline_us(void);
 /**
  * @brief DWT延时函数,单位为秒/s
  * @attention 该函数不受中断是否开启的影响,可以在临界区和关闭中断时使用
- * @note 禁止在rtos初始化完成之前或者中断临界区使用HAL_Delay(),osal_delay_ms()和osal_delay_us()函数,应使用本函数
+ * @note
+ * 禁止在rtos初始化完成之前或者中断临界区使用HAL_Delay(),osal_delay_ms()和osal_delay_us()函数,应使用本函数
  *
  * @param Delay 延时时间,单位为秒/s
  */
@@ -73,7 +74,8 @@ void DWT_Delay(float Delay);
 
 /**
  * @brief DWT更新时间轴函数,会被三个timeline函数调用
- * @attention 如果长时间不调用timeline函数,则需要手动调用该函数更新时间轴,否则CYCCNT溢出后定时和时间轴不准确
+ * @attention
+ * 如果长时间不调用timeline函数,则需要手动调用该函数更新时间轴,否则CYCCNT溢出后定时和时间轴不准确
  */
 void DWT_SysTimeUpdate(void);
 

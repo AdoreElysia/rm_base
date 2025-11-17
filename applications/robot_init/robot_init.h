@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-09-13 10:19:45
  * @FilePath: /rm_base/applications/robot_init/robot_init.h
- * @Description: 
+ * @Description:
  */
 #ifndef _ROBOT_INIT_H_
 #define _ROBOT_INIT_H_

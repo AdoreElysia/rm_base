@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-10-28 20:28:21
  * @FilePath: \rm_base\modules\INS\ins.h
- * @Description: 
+ * @Description:
  */
 /*
  * @Author: laladuduqq 2807523947@qq.com
@@ -26,13 +26,13 @@
 typedef struct
 {
     // 四元数估计值
-    float q[4]; 
+    float q[4];
     // 机体坐标加速度
-    float MotionAccel_b[3]; 
+    float MotionAccel_b[3];
     // 绝对系加速度
-    float MotionAccel_n[3]; 
+    float MotionAccel_n[3];
     // 加速度低通滤波系数
-    float AccelLPF; 
+    float AccelLPF;
     // bodyframe在绝对系的向量表示
     float xn[3];
     float yn[3];
@@ -45,7 +45,7 @@ typedef struct
     // imu实例
     IMU_Instance_t IMU;
     // 采样时间间隔
-    float dt;
+    float    dt;
     uint32_t dwt_cnt;
 } INS_t;
 
@@ -53,10 +53,10 @@ typedef struct
 typedef struct
 {
     uint8_t flag;
-    float scale[3];
-    float Yaw;
-    float Pitch;
-    float Roll;
+    float   scale[3];
+    float   Yaw;
+    float   Pitch;
+    float   Roll;
 } INS_Param_t;
 
 // 函数声明
@@ -97,6 +97,6 @@ void EarthFrameToBodyFrame(const float *vecEF, float *vecBF, float *q);
  * @brief 获取INS结构体指针
  * @return {INS_t*},INS结构体指针
  */
-INS_t* get_ins_ptr(void);
+INS_t *get_ins_ptr(void);
 
-#endif // _INS_H_  
+#endif // _INS_H_

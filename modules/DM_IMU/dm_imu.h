@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-10-01 23:19:13
  * @FilePath: /rm_base/modules/DM_IMU/dm_imu.h
- * @Description: 
+ * @Description:
  */
 #ifndef _DM_IMU_H_
 #define _DM_IMU_H_
@@ -13,24 +13,25 @@
 #include "imu_data.h"
 #include <stdint.h>
 
-#define DM_RID_ACCEL 1
-#define DM_RID_GYRO  2
-#define DM_RID_EULER 3
+#define DM_RID_ACCEL      1
+#define DM_RID_GYRO       2
+#define DM_RID_EULER      3
 #define DM_RID_Quaternion 4
 
-typedef struct{
-    float q[4];
-    IMU_Data_t imu_data;
+typedef struct
+{
+    float          q[4];
+    IMU_Data_t     imu_data;
     IMU_Estimate_t estimate;
-}DM_IMU_DATA_t;
+} DM_IMU_DATA_t;
 
 typedef struct
-{	
+{
     DM_IMU_DATA_t data;
-	Can_Device *can_device;
-	uint8_t offline_index;
-    uint8_t initflag;
-}DM_IMU_Moudule_t;
+    Can_Device   *can_device;
+    uint8_t       offline_index;
+    uint8_t       initflag;
+} DM_IMU_Moudule_t;
 
 /**
  * @description: 初始化dm_imu模块
@@ -55,12 +56,12 @@ void dm_imu_update();
  * @param {void}
  * @return {DM_IMU_DATA_t*}
  */
-DM_IMU_DATA_t* get_dm_imu_data(void);
+DM_IMU_DATA_t *get_dm_imu_data(void);
 /**
  * @description: dm_imu模块shell命令初始化
  * @param {DM_IMU_Moudule_t*} module, dm_imu模块指针
  * @return {void}
  */
-void dm_imu_shell_cmd_init(DM_IMU_Moudule_t* module);
+void dm_imu_shell_cmd_init(DM_IMU_Moudule_t *module);
 
 #endif // _DM_IMU_H_

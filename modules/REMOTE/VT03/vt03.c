@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-10-26 23:46:09
  * @FilePath: \rm_base\modules\REMOTE\VT03\vt03.c
- * @Description: 
+ * @Description:
  */
 #include "vt03.h"
 #include "crc_rm.h"
@@ -17,7 +17,7 @@
 #define log_tag "vt03"
 #include "shell_log.h"
 
-#if defined (REMOTE_VT_SOURCE) && (REMOTE_VT_SOURCE == 2)
+#if defined(REMOTE_VT_SOURCE) && (REMOTE_VT_SOURCE == 2)
 
 static uint8_t VT03_buf[2][REMOTE_UART_RX_BUF_SIZE];
 
@@ -31,18 +31,19 @@ osal_status_t vt03_init(VT03_Instance_t *vt03_instance)
 
     // 重新初始化uart
     REMOTE_VT_UART.Init.BaudRate = 921600;
-    if (HAL_UART_Init(&REMOTE_UART)!= HAL_OK){
+    if (HAL_UART_Init(&REMOTE_UART) != HAL_OK)
+    {
         LOG_ERROR("uart init error");
         return OSAL_ERROR;
-    } 
+    }
 
     // 初始化sbus实例
     OfflineDeviceInit_t offline_init = {
-        .name = "vt03",
+        .name       = "vt03",
         .timeout_ms = 100,
-        .level = OFFLINE_LEVEL_HIGH,
+        .level      = OFFLINE_LEVEL_HIGH,
         .beep_times = 0,
-        .enable = OFFLINE_ENABLE,
+        .enable     = OFFLINE_ENABLE,
     };
     vt03_instance->offline_index = offline_module_device_register(&offline_init);
     if (vt03_instance->offline_index == OFFLINE_INVALID_INDEX)
@@ -52,12 +53,12 @@ osal_status_t vt03_init(VT03_Instance_t *vt03_instance)
     }
 
     UART_Device_init_config sbus_cfg = {
-        .huart = &REMOTE_VT_UART,
-        .expected_rx_len = 21,      
-        .rx_buf = (uint8_t (*)[2])VT03_buf,
-        .rx_buf_size = REMOTE_UART_RX_BUF_SIZE,
-        .rx_mode = UART_MODE_DMA,
-        .tx_mode = UART_MODE_BLOCKING,
+        .huart           = &REMOTE_VT_UART,
+        .expected_rx_len = 21,
+        .rx_buf          = (uint8_t(*)[2])VT03_buf,
+        .rx_buf_size     = REMOTE_UART_RX_BUF_SIZE,
+        .rx_mode         = UART_MODE_DMA,
+        .tx_mode         = UART_MODE_BLOCKING,
     };
     vt03_instance->uart_device = BSP_UART_Device_Init(&sbus_cfg);
     if (vt03_instance->uart_device == NULL)
@@ -71,36 +72,52 @@ osal_status_t vt03_init(VT03_Instance_t *vt03_instance)
     return OSAL_SUCCESS;
 }
 
-void vt03_decode(VT03_Instance_t *vt03_instance, uint8_t *buf){
-    if (vt03_instance==NULL || buf == NULL || vt03_instance->uart_device->real_rx_len != vt03_instance->uart_device->expected_rx_len) {return;}
-    if (buf[0] == 0XA9 && buf[1] == 0X53){
-        if (Verify_CRC16_Check_Sum(buf, 21) == RM_TRUE){
+void vt03_decode(VT03_Instance_t *vt03_instance, uint8_t *buf)
+{
+    if (vt03_instance == NULL || buf == NULL ||
+        vt03_instance->uart_device->real_rx_len != vt03_instance->uart_device->expected_rx_len)
+    {
+        return;
+    }
+    if (buf[0] == 0XA9 && buf[1] == 0X53)
+    {
+        if (Verify_CRC16_Check_Sum(buf, 21) == RM_TRUE)
+        {
             // 原始数据
-            vt03_instance->vt03_remote_data.ch1  = (buf[2] | (buf[3] << 8)) & 0x07FF;
-            vt03_instance->vt03_remote_data.ch2  = ((buf[3] >> 3) | (buf[4] << 5)) & 0x07FF;
-            vt03_instance->vt03_remote_data.ch3  = ((buf[4] >> 6) | (buf[5] << 2) | (buf[6] << 10)) & 0x07FF;
-            vt03_instance->vt03_remote_data.ch4  = ((buf[6] >> 1) | (buf[7] << 7)) & 0x07FF;
+            vt03_instance->vt03_remote_data.ch1 = (buf[2] | (buf[3] << 8)) & 0x07FF;
+            vt03_instance->vt03_remote_data.ch2 = ((buf[3] >> 3) | (buf[4] << 5)) & 0x07FF;
+            vt03_instance->vt03_remote_data.ch3 =
+                ((buf[4] >> 6) | (buf[5] << 2) | (buf[6] << 10)) & 0x07FF;
+            vt03_instance->vt03_remote_data.ch4 = ((buf[6] >> 1) | (buf[7] << 7)) & 0x07FF;
 
-            //数据边界检查
-            if (vt03_instance->vt03_remote_data.ch1 < VT03_CH_VALUE_MIN || vt03_instance->vt03_remote_data.ch1 > VT03_CH_VALUE_MAX ||
-                vt03_instance->vt03_remote_data.ch2 < VT03_CH_VALUE_MIN || vt03_instance->vt03_remote_data.ch2 > VT03_CH_VALUE_MAX ||
-                vt03_instance->vt03_remote_data.ch3 < VT03_CH_VALUE_MIN || vt03_instance->vt03_remote_data.ch3 > VT03_CH_VALUE_MAX ||
-                vt03_instance->vt03_remote_data.ch4 < VT03_CH_VALUE_MIN || vt03_instance->vt03_remote_data.ch4 > VT03_CH_VALUE_MAX)
+            // 数据边界检查
+            if (vt03_instance->vt03_remote_data.ch1 < VT03_CH_VALUE_MIN ||
+                vt03_instance->vt03_remote_data.ch1 > VT03_CH_VALUE_MAX ||
+                vt03_instance->vt03_remote_data.ch2 < VT03_CH_VALUE_MIN ||
+                vt03_instance->vt03_remote_data.ch2 > VT03_CH_VALUE_MAX ||
+                vt03_instance->vt03_remote_data.ch3 < VT03_CH_VALUE_MIN ||
+                vt03_instance->vt03_remote_data.ch3 > VT03_CH_VALUE_MAX ||
+                vt03_instance->vt03_remote_data.ch4 < VT03_CH_VALUE_MIN ||
+                vt03_instance->vt03_remote_data.ch4 > VT03_CH_VALUE_MAX)
             {
                 return;
             }
 
-            //前四个通道减去VT03_CH_VALUE_OFFSET是为了让数据的中间值变为0,方便后续使用
+            // 前四个通道减去VT03_CH_VALUE_OFFSET是为了让数据的中间值变为0,方便后续使用
             vt03_instance->vt03_remote_data.ch1 -= VT03_CH_VALUE_OFFSET;
             vt03_instance->vt03_remote_data.ch2 -= VT03_CH_VALUE_OFFSET;
             vt03_instance->vt03_remote_data.ch3 -= VT03_CH_VALUE_OFFSET;
             vt03_instance->vt03_remote_data.ch4 -= VT03_CH_VALUE_OFFSET;
 
-            //防止数据零漂，设置正负REMOTE_DEAD_ZONE的死区
-            if(abs(vt03_instance->vt03_remote_data.ch1) <= REMOTE_DEAD_ZONE) vt03_instance->vt03_remote_data.ch1 = 0;
-            if(abs(vt03_instance->vt03_remote_data.ch2) <= REMOTE_DEAD_ZONE) vt03_instance->vt03_remote_data.ch2 = 0;
-            if(abs(vt03_instance->vt03_remote_data.ch3) <= REMOTE_DEAD_ZONE) vt03_instance->vt03_remote_data.ch3 = 0;
-            if(abs(vt03_instance->vt03_remote_data.ch4) <= REMOTE_DEAD_ZONE) vt03_instance->vt03_remote_data.ch4 = 0;
+            // 防止数据零漂，设置正负REMOTE_DEAD_ZONE的死区
+            if (abs(vt03_instance->vt03_remote_data.ch1) <= REMOTE_DEAD_ZONE)
+                vt03_instance->vt03_remote_data.ch1 = 0;
+            if (abs(vt03_instance->vt03_remote_data.ch2) <= REMOTE_DEAD_ZONE)
+                vt03_instance->vt03_remote_data.ch2 = 0;
+            if (abs(vt03_instance->vt03_remote_data.ch3) <= REMOTE_DEAD_ZONE)
+                vt03_instance->vt03_remote_data.ch3 = 0;
+            if (abs(vt03_instance->vt03_remote_data.ch4) <= REMOTE_DEAD_ZONE)
+                vt03_instance->vt03_remote_data.ch4 = 0;
 
             // 更新拨轮数据
             vt03_instance->vt03_remote_data.wheel = ((buf[8] >> 1) | (buf[9] << 7)) & 0x07FF;
@@ -122,27 +139,37 @@ void vt03_decode(VT03_Instance_t *vt03_instance, uint8_t *buf){
             vt03_instance->vt03_remote_data.mouse_state.mouse_m = (buf[16] >> 4) & 0x03;
 
             // 鼠标数据边界检查
-            if (vt03_instance->vt03_remote_data.mouse_state.mouse_x < -32768 || vt03_instance->vt03_remote_data.mouse_state.mouse_x > 32767) {
+            if (vt03_instance->vt03_remote_data.mouse_state.mouse_x < -32768 ||
+                vt03_instance->vt03_remote_data.mouse_state.mouse_x > 32767)
+            {
                 vt03_instance->vt03_remote_data.mouse_state.mouse_x = 0;
             }
-            if (vt03_instance->vt03_remote_data.mouse_state.mouse_y < -32768 || vt03_instance->vt03_remote_data.mouse_state.mouse_y > 32767) {
+            if (vt03_instance->vt03_remote_data.mouse_state.mouse_y < -32768 ||
+                vt03_instance->vt03_remote_data.mouse_state.mouse_y > 32767)
+            {
                 vt03_instance->vt03_remote_data.mouse_state.mouse_y = 0;
             }
-            if (vt03_instance->vt03_remote_data.mouse_state.mouse_z < -32768 || vt03_instance->vt03_remote_data.mouse_state.mouse_z > 32767) {
+            if (vt03_instance->vt03_remote_data.mouse_state.mouse_z < -32768 ||
+                vt03_instance->vt03_remote_data.mouse_state.mouse_z > 32767)
+            {
                 vt03_instance->vt03_remote_data.mouse_state.mouse_z = 0;
             }
 
             // 更新键盘数据
-            vt03_instance->vt03_remote_data.key_state.key_code = buf[17] | (buf[18] << 8);     
-            
+            vt03_instance->vt03_remote_data.key_state.key_code = buf[17] | (buf[18] << 8);
+
             offline_module_device_update(vt03_instance->offline_index);
         }
     }
 }
 
-int16_t get_vt03_channel(VT03_Instance_t *vt03_instance, uint8_t channel_index){
-    if (vt03_instance==NULL || channel_index < 1 || channel_index > 5) {return 0;}
-    
+int16_t get_vt03_channel(VT03_Instance_t *vt03_instance, uint8_t channel_index)
+{
+    if (vt03_instance == NULL || channel_index < 1 || channel_index > 5)
+    {
+        return 0;
+    }
+
     int16_t channel_value;
     switch (channel_index)
     {
@@ -166,13 +193,16 @@ int16_t get_vt03_channel(VT03_Instance_t *vt03_instance, uint8_t channel_index){
     }
     return channel_value;
 }
-#else  
+#else
 osal_status_t vt03_init(VT03_Instance_t *vt03_instance)
 {
-    return OSAL_ERROR; 
+    return OSAL_ERROR;
 }
-void vt03_decode(VT03_Instance_t *vt03_instance, uint8_t *buf){}
-int16_t get_vt03_channel(VT03_Instance_t *vt03_instance, uint8_t channel_index){
+void vt03_decode(VT03_Instance_t *vt03_instance, uint8_t *buf)
+{
+}
+int16_t get_vt03_channel(VT03_Instance_t *vt03_instance, uint8_t channel_index)
+{
     return 0;
 }
 #endif

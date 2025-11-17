@@ -10,29 +10,29 @@
 #define _BSP_CONFIG_H_
 
 /* UART 配置 */
-#define UART_MAX_INSTANCE_NUM 3        //可用串口数量
+#define UART_MAX_INSTANCE_NUM   3 // 可用串口数量
 
 /* SPI 配置 */
-#define SPI_BUS_NUM 2                  // 总线数量
-#define MAX_DEVICES_PER_BUS 4          // 每条总线最大设备数
+#define SPI_BUS_NUM             2 // 总线数量
+#define MAX_DEVICES_PER_BUS     4 // 每条总线最大设备数
 
 /* PWM 配置 */
-#define MAX_PWM_DEVICES 10             // 最大PWM设备数
+#define MAX_PWM_DEVICES         10 // 最大PWM设备数
 
 /* I2C 配置 */
-#define I2C_BUS_NUM 2                  // 总线数量
-#define MAX_DEVICES_PER_I2C_BUS 4      // 每条总线最大设备数
+#define I2C_BUS_NUM             2 // 总线数量
+#define MAX_DEVICES_PER_I2C_BUS 4 // 每条总线最大设备数
 
 /* GPIO 配置 */
-#define GPIO_EXTI_DEVICE_NUM 16        // 最大GPIO中断回调设备数
+#define GPIO_EXTI_DEVICE_NUM    16 // 最大GPIO中断回调设备数
 
 /* ADC 配置 */
-#define ADC_DEVICE_NUM 4               // 最大ADC设备数
+#define ADC_DEVICE_NUM          4 // 最大ADC设备数
 
 /* CAN 配置 */
-#define CAN_BUS_NUM 2                  // 总线数量
-#define MAX_DEVICES_PER_CAN_BUS  8     // 每总线最大设备数
+#define CAN_BUS_NUM             2 // 总线数量
+#define MAX_DEVICES_PER_CAN_BUS 8 // 每总线最大设备数
 /* CAN 过滤器配置 */
-#define BSP_CAN_FILTER_ENABLE   1      // 启用CAN过滤器，接收特定CAN消息，关闭则全接收，方便各类电机测试
+#define BSP_CAN_FILTER_ENABLE   1 // 启用CAN过滤器，接收特定CAN消息，关闭则全接收，方便各类电机测试
 
 #endif // _BSP_CONFIG_H_

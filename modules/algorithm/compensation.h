@@ -2,13 +2,14 @@
 #define _COMPENSATION_H_
 
 // 前馈补偿函数指针类型
-typedef float (*FeedforwardFunc)(float ref, float degree , float angular_velocity);
+typedef float (*FeedforwardFunc)(float ref, float degree, float angular_velocity);
 
 // 用于存储补偿参数的结构体
-typedef struct {
-    float gravity_force;  // 重力补偿力(N)
-    float arm_length;     // 杆长(m)
-    float friction;       // 摩擦力(N)
+typedef struct
+{
+    float gravity_force; // 重力补偿力(N)
+    float arm_length;    // 杆长(m)
+    float friction;      // 摩擦力(N)
 } CompensationParams;
 
 /**

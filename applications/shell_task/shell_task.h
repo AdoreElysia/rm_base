@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-09-17 20:32:22
  * @FilePath: /rm_base/applications/shell_task/shell_task.h
- * @Description: 
+ * @Description:
  */
 #ifndef _SHELL_TASK_H_
 #define _SHELL_TASK_H_

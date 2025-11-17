@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-10-26 17:11:22
  * @FilePath: \rm_base\modules\REMOTE\VT03\vt03.h
- * @Description: 
+ * @Description:
  */
 #ifndef _VT03_H_
 #define _VT03_H_
@@ -18,23 +18,24 @@
 #define VT03_CH_VALUE_OFFSET ((uint16_t)1024)
 #define VT03_CH_VALUE_MAX    ((uint16_t)1684)
 
-typedef struct {
-    int16_t ch1;     
-    int16_t ch2;     
-    int16_t ch3;     
-    int16_t ch4;    
-    int16_t wheel;        
-    button_state_t button_state;
-    mouse_state_t mouse_state;
+typedef struct
+{
+    int16_t          ch1;
+    int16_t          ch2;
+    int16_t          ch3;
+    int16_t          ch4;
+    int16_t          wheel;
+    button_state_t   button_state;
+    mouse_state_t    mouse_state;
     keyboard_state_t key_state;
-}vt03_remote_data_t;
+} vt03_remote_data_t;
 
-
-typedef struct{
+typedef struct
+{
     vt03_remote_data_t vt03_remote_data;
-    uint8_t offline_index; // 离线索引
-    UART_Device *uart_device; // UART实例
-}VT03_Instance_t;
+    uint8_t            offline_index; // 离线索引
+    UART_Device       *uart_device;   // UART实例
+} VT03_Instance_t;
 
 /**
  * @description: VT03图传初始化

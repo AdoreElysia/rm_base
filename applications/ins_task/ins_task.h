@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-09-14 13:51:43
  * @FilePath: /rm_base/applications/ins_task/ins_task.h
- * @Description: 
+ * @Description:
  */
 #ifndef _INS_TASK_H_
 #define _INS_TASK_H_

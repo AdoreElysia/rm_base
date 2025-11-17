@@ -22,24 +22,22 @@
 #define ARM_MATH_DSP    // define in arm_math.h
 */
 
-
-
 #include "arm_math.h"
 #include "stdint.h"
 #include "tx_api.h"
 
 // 最大支持的状态变量、控制变量和观测变量维度
 #define KF_MAX_XHAT_SIZE 10
-#define KF_MAX_U_SIZE 1
-#define KF_MAX_Z_SIZE 5
+#define KF_MAX_U_SIZE    1
+#define KF_MAX_Z_SIZE    5
 // 矩阵定义
-#define mat arm_matrix_instance_f32
-#define Matrix_Init arm_mat_init_f32
-#define Matrix_Add arm_mat_add_f32
-#define Matrix_Subtract arm_mat_sub_f32
-#define Matrix_Multiply arm_mat_mult_f32
+#define mat              arm_matrix_instance_f32
+#define Matrix_Init      arm_mat_init_f32
+#define Matrix_Add       arm_mat_add_f32
+#define Matrix_Subtract  arm_mat_sub_f32
+#define Matrix_Multiply  arm_mat_mult_f32
 #define Matrix_Transpose arm_mat_trans_f32
-#define Matrix_Inverse arm_mat_inverse_f32
+#define Matrix_Inverse   arm_mat_inverse_f32
 
 typedef struct kf_t
 {
@@ -54,10 +52,10 @@ typedef struct kf_t
     uint8_t UseAutoAdjustment;
     uint8_t MeasurementValidNum;
 
-    uint8_t *MeasurementMap;      // 量测与状态的关系 how measurement relates to the state
-    float *MeasurementDegree;     // 测量值对应H矩阵元素值 elements of each measurement in H
-    float *MatR_DiagonalElements; // 量测方差 variance for each measurement
-    float *StateMinVariance;      // 最小方差 避免方差过度收敛 suppress filter excessive convergence
+    uint8_t *MeasurementMap;        // 量测与状态的关系 how measurement relates to the state
+    float   *MeasurementDegree;     // 测量值对应H矩阵元素值 elements of each measurement in H
+    float   *MatR_DiagonalElements; // 量测方差 variance for each measurement
+    float   *StateMinVariance; // 最小方差 避免方差过度收敛 suppress filter excessive convergence
     uint8_t *temp;
 
     // 配合用户定义函数使用,作为标志位用于判断是否要跳过标准KF中五个环节中的任意一个
@@ -88,7 +86,7 @@ typedef struct kf_t
     void (*User_Func4_f)(struct kf_t *kf);
     void (*User_Func5_f)(struct kf_t *kf);
     void (*User_Func6_f)(struct kf_t *kf);
-    
+
     // 矩阵存储空间指针
     float *xhat_data, *xhatminus_data;
     float *u_data;
@@ -101,20 +99,20 @@ typedef struct kf_t
     float *R_data;
     float *K_data;
     float *S_data, *temp_matrix_data, *temp_matrix_data1, *temp_vector_data, *temp_vector_data1;
-    
+
     // 静态内存分配的数据区域
     // measurement flags data
     uint8_t MeasurementMap_Data[KF_MAX_Z_SIZE];
-    float MeasurementDegree_Data[KF_MAX_Z_SIZE];
-    float MatR_DiagonalElements_Data[KF_MAX_Z_SIZE];
-    float StateMinVariance_Data[KF_MAX_XHAT_SIZE];
+    float   MeasurementDegree_Data[KF_MAX_Z_SIZE];
+    float   MatR_DiagonalElements_Data[KF_MAX_Z_SIZE];
+    float   StateMinVariance_Data[KF_MAX_XHAT_SIZE];
     uint8_t temp_Data[KF_MAX_Z_SIZE];
-    
+
     // filter data
     float FilteredValue_Data[KF_MAX_XHAT_SIZE];
     float MeasuredVector_Data[KF_MAX_Z_SIZE];
     float ControlVector_Data[KF_MAX_U_SIZE];
-    
+
     // xhat and xhatminus data
     float xhat_data_Data[KF_MAX_XHAT_SIZE];
     float xhatminus_data_Data[KF_MAX_XHAT_SIZE];
@@ -195,7 +193,8 @@ void Kalman_Filter_xhatUpdate(KalmanFilter_t *kf);
  */
 void Kalman_Filter_P_Update(KalmanFilter_t *kf);
 /**
- * @brief 执行卡尔曼滤波黄金五式,提供了用户定义函数,可以替代五个中的任意一个环节,方便自行扩展为EKF/UKF/ESKF/AUKF等
+ * @brief
+ * 执行卡尔曼滤波黄金五式,提供了用户定义函数,可以替代五个中的任意一个环节,方便自行扩展为EKF/UKF/ESKF/AUKF等
  * @param kf kf类型定义
  * @return float* 返回滤波值
  */

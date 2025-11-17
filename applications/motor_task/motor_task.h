@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-10-26 11:54:13
  * @FilePath: \rm_base\applications\motor_task\motor_task.h
- * @Description: 
+ * @Description:
  */
 #ifndef _MOTOR_TASK_H_
 #define _MOTOR_TASK_H_
@@ -19,6 +19,6 @@ void motor_task_init(void);
  * @param idx 电机索引
  * @return void* 对应的电机指针，如果不存在则返回NULL
  */
-void* get_motor_ptr(uint8_t motor_type, uint8_t idx);
+void *get_motor_ptr(uint8_t motor_type, uint8_t idx);
 
 #endif // _MOTOR_TASK_H_

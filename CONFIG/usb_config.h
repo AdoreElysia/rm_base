@@ -38,8 +38,9 @@
 #define USB_NOCACHE_RAM_SECTION __attribute__((section(".noncacheable")))
 
 /* use usb_memcpy default for high performance but cost more flash memory.
- * And, arm libc has a bug that memcpy() may cause data misalignment when the size is not a multiple of 4.
-*/
+ * And, arm libc has a bug that memcpy() may cause data misalignment when the size is not a multiple
+ * of 4.
+ */
 // #define CONFIG_USB_MEMCPY_DISABLE
 
 /* ================= USB Device Stack Configuration ================ */
@@ -51,7 +52,7 @@
 
 /* Send ep0 in data from user buffer instead of copying into ep0 reqdata
  * Please note that user buffer must be aligned with CONFIG_USB_ALIGN_SIZE
-*/
+ */
 // #define CONFIG_USBDEV_EP0_INDATA_NO_COPY
 
 /* Check if the input descriptor is correct */
@@ -159,13 +160,13 @@
 #define CONFIG_USBHOST_MAX_INTF_ALTSETTINGS 2
 #define CONFIG_USBHOST_MAX_ENDPOINTS        4
 
-#define CONFIG_USBHOST_MAX_CDC_ACM_CLASS 4
-#define CONFIG_USBHOST_MAX_HID_CLASS     4
-#define CONFIG_USBHOST_MAX_MSC_CLASS     2
-#define CONFIG_USBHOST_MAX_AUDIO_CLASS   1
-#define CONFIG_USBHOST_MAX_VIDEO_CLASS   1
+#define CONFIG_USBHOST_MAX_CDC_ACM_CLASS    4
+#define CONFIG_USBHOST_MAX_HID_CLASS        4
+#define CONFIG_USBHOST_MAX_MSC_CLASS        2
+#define CONFIG_USBHOST_MAX_AUDIO_CLASS      1
+#define CONFIG_USBHOST_MAX_VIDEO_CLASS      1
 
-#define CONFIG_USBHOST_DEV_NAMELEN 16
+#define CONFIG_USBHOST_DEV_NAMELEN          16
 
 #ifndef CONFIG_USBHOST_PSC_PRIO
 #define CONFIG_USBHOST_PSC_PRIO 0
@@ -174,7 +175,7 @@
 #define CONFIG_USBHOST_PSC_STACKSIZE 2048
 #endif
 
-//#define CONFIG_USBHOST_GET_STRING_DESC
+// #define CONFIG_USBHOST_GET_STRING_DESC
 
 // #define CONFIG_USBHOST_MSOS_ENABLE
 #ifndef CONFIG_USBHOST_MSOS_VENDOR_CODE
@@ -195,46 +196,54 @@
 #endif
 
 /* This parameter affects usb performance, and depends on (TCP_WND)tcp eceive windows size,
- * you can change to 2K ~ 16K and must be larger than TCP RX windows size in order to avoid being overflow.
+ * you can change to 2K ~ 16K and must be larger than TCP RX windows size in order to avoid being
+ * overflow.
  */
 #ifndef CONFIG_USBHOST_RNDIS_ETH_MAX_RX_SIZE
 #define CONFIG_USBHOST_RNDIS_ETH_MAX_RX_SIZE (2048)
 #endif
 
-/* Because lwip do not support multi pbuf at a time, so increasing this variable has no performance improvement */
+/* Because lwip do not support multi pbuf at a time, so increasing this variable has no performance
+ * improvement */
 #ifndef CONFIG_USBHOST_RNDIS_ETH_MAX_TX_SIZE
 #define CONFIG_USBHOST_RNDIS_ETH_MAX_TX_SIZE (2048)
 #endif
 
 /* This parameter affects usb performance, and depends on (TCP_WND)tcp eceive windows size,
- * you can change to 2K ~ 16K and must be larger than TCP RX windows size in order to avoid being overflow.
+ * you can change to 2K ~ 16K and must be larger than TCP RX windows size in order to avoid being
+ * overflow.
  */
 #ifndef CONFIG_USBHOST_CDC_NCM_ETH_MAX_RX_SIZE
 #define CONFIG_USBHOST_CDC_NCM_ETH_MAX_RX_SIZE (2048)
 #endif
-/* Because lwip do not support multi pbuf at a time, so increasing this variable has no performance improvement */
+/* Because lwip do not support multi pbuf at a time, so increasing this variable has no performance
+ * improvement */
 #ifndef CONFIG_USBHOST_CDC_NCM_ETH_MAX_TX_SIZE
 #define CONFIG_USBHOST_CDC_NCM_ETH_MAX_TX_SIZE (2048)
 #endif
 
 /* This parameter affects usb performance, and depends on (TCP_WND)tcp eceive windows size,
- * you can change to 2K ~ 16K and must be larger than TCP RX windows size in order to avoid being overflow.
+ * you can change to 2K ~ 16K and must be larger than TCP RX windows size in order to avoid being
+ * overflow.
  */
 #ifndef CONFIG_USBHOST_ASIX_ETH_MAX_RX_SIZE
 #define CONFIG_USBHOST_ASIX_ETH_MAX_RX_SIZE (2048)
 #endif
-/* Because lwip do not support multi pbuf at a time, so increasing this variable has no performance improvement */
+/* Because lwip do not support multi pbuf at a time, so increasing this variable has no performance
+ * improvement */
 #ifndef CONFIG_USBHOST_ASIX_ETH_MAX_TX_SIZE
 #define CONFIG_USBHOST_ASIX_ETH_MAX_TX_SIZE (2048)
 #endif
 
 /* This parameter affects usb performance, and depends on (TCP_WND)tcp eceive windows size,
- * you can change to 2K ~ 16K and must be larger than TCP RX windows size in order to avoid being overflow.
+ * you can change to 2K ~ 16K and must be larger than TCP RX windows size in order to avoid being
+ * overflow.
  */
 #ifndef CONFIG_USBHOST_RTL8152_ETH_MAX_RX_SIZE
 #define CONFIG_USBHOST_RTL8152_ETH_MAX_RX_SIZE (2048)
 #endif
-/* Because lwip do not support multi pbuf at a time, so increasing this variable has no performance improvement */
+/* Because lwip do not support multi pbuf at a time, so increasing this variable has no performance
+ * improvement */
 #ifndef CONFIG_USBHOST_RTL8152_ETH_MAX_TX_SIZE
 #define CONFIG_USBHOST_RTL8152_ETH_MAX_TX_SIZE (2048)
 #endif
@@ -258,12 +267,13 @@
 // #define CONFIG_USBDEV_SOF_ENABLE
 
 /* ---------------- FSDEV Configuration ---------------- */
-//#define CONFIG_USBDEV_FSDEV_PMA_ACCESS 2 // maybe 1 or 2, many chips may have a difference
+// #define CONFIG_USBDEV_FSDEV_PMA_ACCESS 2 // maybe 1 or 2, many chips may have a difference
 
 /* ---------------- DWC2 Configuration ---------------- */
 /* enable dwc2 buffer dma mode for device
- * in xxx32 chips, only pb14/pb15 can support dma mode, pa11/pa12 is not supported(only a few supports, but we ignore them)
-*/
+ * in xxx32 chips, only pb14/pb15 can support dma mode, pa11/pa12 is not supported(only a few
+ * supports, but we ignore them)
+ */
 // #define CONFIG_USB_DWC2_DMA_ENABLE
 
 /* ---------------- MUSB Configuration ---------------- */
@@ -289,27 +299,29 @@
 // #define CONFIG_USB_EHCI_DESC_DCACHE_ENABLE
 
 /* ---------------- OHCI Configuration ---------------- */
-#define CONFIG_USB_OHCI_HCOR_OFFSET (0x0)
-#define CONFIG_USB_OHCI_ED_NUM 10
-#define CONFIG_USB_OHCI_TD_NUM 3
+#define CONFIG_USB_OHCI_HCOR_OFFSET     (0x0)
+#define CONFIG_USB_OHCI_ED_NUM          10
+#define CONFIG_USB_OHCI_TD_NUM          3
 // #define CONFIG_USB_OHCI_DESC_DCACHE_ENABLE
 
 /* ---------------- XHCI Configuration ---------------- */
-#define CONFIG_USB_XHCI_HCCR_OFFSET (0x0)
+#define CONFIG_USB_XHCI_HCCR_OFFSET     (0x0)
 
 /* ---------------- DWC2 Configuration ---------------- */
 // nothing to define
 
 /* ---------------- MUSB Configuration ---------------- */
-#define CONFIG_USB_MUSB_PIPE_NUM 8
+#define CONFIG_USB_MUSB_PIPE_NUM        8
 // #define CONFIG_USB_MUSB_SUNXI
 // #define CONFIG_USB_MUSB_WITHOUT_MULTIPOINT
 
 /* When your chip hardware supports high-speed and wants to initialize it in high-speed mode,
- * the relevant IP will configure the internal or external high-speed PHY according to CONFIG_USB_HS.
+ * the relevant IP will configure the internal or external high-speed PHY according to
+ * CONFIG_USB_HS.
  *
- * in xxx32 chips, only pb14/pb15 can support hs mode, pa11/pa12 is not supported(only a few supports, but we ignore them).
-*/
+ * in xxx32 chips, only pb14/pb15 can support hs mode, pa11/pa12 is not supported(only a few
+ * supports, but we ignore them).
+ */
 // #define CONFIG_USB_HS
 
 #ifndef usb_phyaddr2ramaddr

@@ -77,10 +77,9 @@
  *     static uint8_t measurement_reference[3] = {1, 1, 3}
  *
  *     static float measurement_degree[3] = {1, 1, 1}
- *     // 根据measurement_reference与measurement_degree生成H矩阵如下（在当前周期全部测量数据有效情况下）
- *       |1   0   0|
- *       |1   0   0|
- *       |0   0   1|
+ *     //
+ *根据measurement_reference与measurement_degree生成H矩阵如下（在当前周期全部测量数据有效情况下） |1
+ *0   0| |1   0   0| |0   0   1|
  *
  *     static float mat_R_diagonal_elements = {30, 25, 35}
  *     //根据mat_R_diagonal_elements生成R矩阵如下（在当前周期全部测量数据有效情况下）
@@ -96,8 +95,9 @@
  *     memcpy(Height_KF.Q_data, Q_Init, sizeof(Q_Init));
  *     memcpy(Height_KF.MeasurementMap, measurement_reference, sizeof(measurement_reference));
  *     memcpy(Height_KF.MeasurementDegree, measurement_degree, sizeof(measurement_degree));
- *     memcpy(Height_KF.MatR_DiagonalElements, mat_R_diagonal_elements, sizeof(mat_R_diagonal_elements));
- *     memcpy(Height_KF.StateMinVariance, state_min_variance, sizeof(state_min_variance));
+ *     memcpy(Height_KF.MatR_DiagonalElements, mat_R_diagonal_elements,
+ *sizeof(mat_R_diagonal_elements)); memcpy(Height_KF.StateMinVariance, state_min_variance,
+ *sizeof(state_min_variance));
  * }
  *
  * void INS_Task(void const *pvParameters)
@@ -135,14 +135,15 @@ void Kalman_Filter_Init(KalmanFilter_t *kf, uint8_t xhatSize, uint8_t uSize, uin
 {
 
     // 检查维度是否超过最大限制
-    if (xhatSize > KF_MAX_XHAT_SIZE || uSize > KF_MAX_U_SIZE || zSize > KF_MAX_Z_SIZE) {
+    if (xhatSize > KF_MAX_XHAT_SIZE || uSize > KF_MAX_U_SIZE || zSize > KF_MAX_Z_SIZE)
+    {
         // 维度超过限制，无法初始化
         return;
     }
 
     kf->xhatSize = xhatSize;
-    kf->uSize = uSize;
-    kf->zSize = zSize;
+    kf->uSize    = uSize;
+    kf->zSize    = zSize;
 
     kf->MeasurementValidNum = 0;
 
@@ -201,7 +202,7 @@ void Kalman_Filter_Init(KalmanFilter_t *kf, uint8_t xhatSize, uint8_t uSize, uin
     Matrix_Init(&kf->Pminus, kf->xhatSize, kf->xhatSize, (float *)kf->Pminus_data);
 
     // state transition matrix F FT
-    kf->F_data = kf->F_data_Data;
+    kf->F_data  = kf->F_data_Data;
     kf->FT_data = kf->FT_data_Data;
     memset(kf->F_data, 0, sizeof(float) * xhatSize * xhatSize);
     memset(kf->FT_data, 0, sizeof(float) * xhatSize * xhatSize);
@@ -217,7 +218,7 @@ void Kalman_Filter_Init(KalmanFilter_t *kf, uint8_t xhatSize, uint8_t uSize, uin
     }
 
     // measurement matrix H
-    kf->H_data = kf->H_data_Data;
+    kf->H_data  = kf->H_data_Data;
     kf->HT_data = kf->HT_data_Data;
     memset(kf->H_data, 0, sizeof(float) * zSize * xhatSize);
     memset(kf->HT_data, 0, sizeof(float) * xhatSize * zSize);
@@ -239,10 +240,10 @@ void Kalman_Filter_Init(KalmanFilter_t *kf, uint8_t xhatSize, uint8_t uSize, uin
     memset(kf->K_data, 0, sizeof(float) * xhatSize * zSize);
     Matrix_Init(&kf->K, kf->xhatSize, kf->zSize, (float *)kf->K_data);
 
-    kf->S_data = kf->S_data_Data;
-    kf->temp_matrix_data = kf->temp_matrix_data_Data;
+    kf->S_data            = kf->S_data_Data;
+    kf->temp_matrix_data  = kf->temp_matrix_data_Data;
     kf->temp_matrix_data1 = kf->temp_matrix_data1_Data;
-    kf->temp_vector_data = kf->temp_vector_data_Data;
+    kf->temp_vector_data  = kf->temp_vector_data_Data;
     kf->temp_vector_data1 = kf->temp_vector_data1_Data;
     Matrix_Init(&kf->S, kf->xhatSize, kf->xhatSize, (float *)kf->S_data);
     Matrix_Init(&kf->temp_matrix, kf->xhatSize, kf->xhatSize, (float *)kf->temp_matrix_data);
@@ -261,14 +262,18 @@ void Kalman_Filter_Measure(KalmanFilter_t *kf)
 {
     // 矩阵H K R根据量测情况自动调整
     // matrix H K R auto adjustment
-    if (kf->UseAutoAdjustment != 0) {
+    if (kf->UseAutoAdjustment != 0)
+    {
         H_K_R_Adjustment(kf);
-    } else {
+    }
+    else
+    {
         memcpy(kf->z_data, kf->MeasuredVector, sizeof(float) * kf->zSize);
         memset(kf->MeasuredVector, 0, sizeof(float) * kf->zSize);
     }
 
-    if (kf->uSize > 0) {
+    if (kf->uSize > 0)
+    {
         memcpy(kf->u_data, kf->ControlVector, sizeof(float) * kf->uSize);
     }
 }
@@ -282,12 +287,12 @@ void Kalman_Filter_xhatMinusUpdate(KalmanFilter_t *kf)
             // xhat'(k) = F * xhat(k-1)
             kf->temp_vector.numRows = kf->xhatSize;
             kf->temp_vector.numCols = 1;
-            kf->MatStatus = Matrix_Multiply(&kf->F, &kf->xhat, &kf->temp_vector);
-            
+            kf->MatStatus           = Matrix_Multiply(&kf->F, &kf->xhat, &kf->temp_vector);
+
             // xhat'(k) = F * xhat(k-1) + B * u
             kf->temp_vector1.numRows = kf->xhatSize;
             kf->temp_vector1.numCols = 1;
-            kf->MatStatus = Matrix_Multiply(&kf->B, &kf->u, &kf->temp_vector1);
+            kf->MatStatus            = Matrix_Multiply(&kf->B, &kf->u, &kf->temp_vector1);
             kf->MatStatus = Matrix_Add(&kf->temp_vector, &kf->temp_vector1, &kf->xhatminus);
         }
         else
@@ -304,15 +309,15 @@ void Kalman_Filter_PminusUpdate(KalmanFilter_t *kf)
     {
         // F^T
         kf->MatStatus = Matrix_Transpose(&kf->F, &kf->FT);
-        
+
         // F * P
         kf->MatStatus = Matrix_Multiply(&kf->F, &kf->P, &kf->Pminus);
-        
+
         // F * P * F^T
         kf->temp_matrix.numRows = kf->Pminus.numRows;
         kf->temp_matrix.numCols = kf->FT.numCols;
-        kf->MatStatus = Matrix_Multiply(&kf->Pminus, &kf->FT, &kf->temp_matrix);
-        
+        kf->MatStatus           = Matrix_Multiply(&kf->Pminus, &kf->FT, &kf->temp_matrix);
+
         // F * P * F^T + Q
         kf->MatStatus = Matrix_Add(&kf->temp_matrix, &kf->Q, &kf->Pminus);
     }
@@ -323,30 +328,30 @@ void Kalman_Filter_SetK(KalmanFilter_t *kf)
     {
         // H^T
         kf->MatStatus = Matrix_Transpose(&kf->H, &kf->HT);
-        
+
         // H * P'
         kf->temp_matrix.numRows = kf->H.numRows;
         kf->temp_matrix.numCols = kf->Pminus.numCols;
-        kf->MatStatus = Matrix_Multiply(&kf->H, &kf->Pminus, &kf->temp_matrix);
-        
+        kf->MatStatus           = Matrix_Multiply(&kf->H, &kf->Pminus, &kf->temp_matrix);
+
         // H * P' * H^T
         kf->temp_matrix1.numRows = kf->temp_matrix.numRows;
         kf->temp_matrix1.numCols = kf->HT.numCols;
-        kf->MatStatus = Matrix_Multiply(&kf->temp_matrix, &kf->HT, &kf->temp_matrix1);
-        
+        kf->MatStatus            = Matrix_Multiply(&kf->temp_matrix, &kf->HT, &kf->temp_matrix1);
+
         // H * P' * H^T + R
         kf->S.numRows = kf->R.numRows;
         kf->S.numCols = kf->R.numCols;
         kf->MatStatus = Matrix_Add(&kf->temp_matrix1, &kf->R, &kf->S);
-        
+
         // inv(H * P' * H^T + R)
         kf->MatStatus = Matrix_Inverse(&kf->S, &kf->temp_matrix1);
-        
+
         // P' * H^T
         kf->temp_matrix.numRows = kf->Pminus.numRows;
         kf->temp_matrix.numCols = kf->HT.numCols;
-        kf->MatStatus = Matrix_Multiply(&kf->Pminus, &kf->HT, &kf->temp_matrix);
-        
+        kf->MatStatus           = Matrix_Multiply(&kf->Pminus, &kf->HT, &kf->temp_matrix);
+
         // K = P' * H^T * inv(H * P' * H^T + R)
         kf->MatStatus = Matrix_Multiply(&kf->temp_matrix, &kf->temp_matrix1, &kf->K);
     }
@@ -358,18 +363,18 @@ void Kalman_Filter_xhatUpdate(KalmanFilter_t *kf)
         // H * xhat'(k)
         kf->temp_vector.numRows = kf->H.numRows;
         kf->temp_vector.numCols = 1;
-        kf->MatStatus = Matrix_Multiply(&kf->H, &kf->xhatminus, &kf->temp_vector);
-        
+        kf->MatStatus           = Matrix_Multiply(&kf->H, &kf->xhatminus, &kf->temp_vector);
+
         // z(k) - H * xhat'(k)
         kf->temp_vector1.numRows = kf->z.numRows;
         kf->temp_vector1.numCols = 1;
-        kf->MatStatus = Matrix_Subtract(&kf->z, &kf->temp_vector, &kf->temp_vector1);
-        
+        kf->MatStatus            = Matrix_Subtract(&kf->z, &kf->temp_vector, &kf->temp_vector1);
+
         // K(k) * (z(k) - H * xhat'(k))
         kf->temp_vector.numRows = kf->K.numRows;
         kf->temp_vector.numCols = 1;
-        kf->MatStatus = Matrix_Multiply(&kf->K, &kf->temp_vector1, &kf->temp_vector);
-        
+        kf->MatStatus           = Matrix_Multiply(&kf->K, &kf->temp_vector1, &kf->temp_vector);
+
         // xhat(k) = xhat'(k) + K(k) * (z(k) - H * xhat'(k))
         kf->MatStatus = Matrix_Add(&kf->xhatminus, &kf->temp_vector, &kf->xhat);
     }
@@ -381,13 +386,13 @@ void Kalman_Filter_P_Update(KalmanFilter_t *kf)
         // K * H
         kf->temp_matrix.numRows = kf->K.numRows;
         kf->temp_matrix.numCols = kf->H.numCols;
-        kf->MatStatus = Matrix_Multiply(&kf->K, &kf->H, &kf->temp_matrix);
-        
+        kf->MatStatus           = Matrix_Multiply(&kf->K, &kf->H, &kf->temp_matrix);
+
         // K * H * P'
         kf->temp_matrix1.numRows = kf->temp_matrix.numRows;
         kf->temp_matrix1.numCols = kf->Pminus.numCols;
         kf->MatStatus = Matrix_Multiply(&kf->temp_matrix, &kf->Pminus, &kf->temp_matrix1);
-        
+
         // P' - K * H * P'
         kf->MatStatus = Matrix_Subtract(&kf->Pminus, &kf->temp_matrix1, &kf->P);
     }
@@ -479,10 +484,11 @@ static void H_K_R_Adjustment(KalmanFilter_t *kf)
             // 重构向量z
             // rebuild vector z
             kf->z_data[kf->MeasurementValidNum] = kf->z_data[i];
-            kf->temp[kf->MeasurementValidNum] = i;
+            kf->temp[kf->MeasurementValidNum]   = i;
             // 重构矩阵H
             // rebuild matrix H
-            kf->H_data[kf->xhatSize * kf->MeasurementValidNum + kf->MeasurementMap[i] - 1] = kf->MeasurementDegree[i];
+            kf->H_data[kf->xhatSize * kf->MeasurementValidNum + kf->MeasurementMap[i] - 1] =
+                kf->MeasurementDegree[i];
             kf->MeasurementValidNum++;
         }
     }
@@ -495,13 +501,13 @@ static void H_K_R_Adjustment(KalmanFilter_t *kf)
 
     // 调整矩阵维数
     // adjust the dimensions of system matrices
-    kf->H.numRows = kf->MeasurementValidNum;
-    kf->H.numCols = kf->xhatSize;
+    kf->H.numRows  = kf->MeasurementValidNum;
+    kf->H.numCols  = kf->xhatSize;
     kf->HT.numRows = kf->xhatSize;
     kf->HT.numCols = kf->MeasurementValidNum;
-    kf->R.numRows = kf->MeasurementValidNum;
-    kf->R.numCols = kf->MeasurementValidNum;
-    kf->K.numRows = kf->xhatSize;
-    kf->K.numCols = kf->MeasurementValidNum;
-    kf->z.numRows = kf->MeasurementValidNum;
+    kf->R.numRows  = kf->MeasurementValidNum;
+    kf->R.numCols  = kf->MeasurementValidNum;
+    kf->K.numRows  = kf->xhatSize;
+    kf->K.numCols  = kf->MeasurementValidNum;
+    kf->z.numRows  = kf->MeasurementValidNum;
 }

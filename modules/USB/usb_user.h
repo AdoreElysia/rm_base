@@ -16,28 +16,29 @@
 #pragma pack(1)
 struct User_Send_s
 {
-  uint8_t header;
-  uint8_t mode;
-  float roll;
-  float pitch;
-  float yaw;
-  uint8_t end;
+    uint8_t header;
+    uint8_t mode;
+    float   roll;
+    float   pitch;
+    float   yaw;
+    uint8_t end;
 };
 struct User_Recv_s
 {
-  uint8_t header; 
-  uint8_t fire_advice;
-  float pitch;
-  float yaw;
-  float distance;
-  uint8_t end;
+    uint8_t header;
+    uint8_t fire_advice;
+    float   pitch;
+    float   yaw;
+    float   distance;
+    uint8_t end;
 };
-#pragma pack() 
+#pragma pack()
 
-typedef struct{
-  USB_CDC_Device *cdc_device;
-  uint8_t offline_index;
-}user_cdc_t;
+typedef struct
+{
+    USB_CDC_Device *cdc_device;
+    uint8_t         offline_index;
+} user_cdc_t;
 
 /**
  * @brief 初始化USB用户设备
@@ -60,5 +61,5 @@ osal_status_t usb_user_send(struct User_Send_s *send);
  * @details 从USB CDC接收数据并验证数据帧格式
  * @return struct User_Recv_s* 接收到的数据指针，NULL表示接收失败或数据验证失败
  */
-struct User_Recv_s* usb_user_recv();
+struct User_Recv_s *usb_user_recv();
 #endif // _USB_USER_H_

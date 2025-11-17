@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-09-07 13:04:33
  * @FilePath: /rm_base/OSAL/osal_def.h
- * @Description: 
+ * @Description:
  */
 #ifndef __OSAL_DEF_H__
 #define __OSAL_DEF_H__
@@ -15,29 +15,30 @@ extern "C" {
 #endif
 
 /* OSAL支持的RTOS类型 */
-#define OSAL_THREADX       (1)
-#define OSAL_FREERTOS      (2)
+#define OSAL_THREADX  (1)
+#define OSAL_FREERTOS (2)
 
 /* 配置当前使用的RTOS类型，默认为裸机模式 */
 #ifndef OSAL_RTOS_TYPE
-#define OSAL_RTOS_TYPE     OSAL_THREADX
+#define OSAL_RTOS_TYPE OSAL_THREADX
 #endif
 
 #ifdef OSAL_RTOS_TYPE
-    #if OSAL_RTOS_TYPE == OSAL_THREADX
-    #include "tx_api.h"
-    #elif OSAL_RTOS_TYPE == OSAL_FREERTOS
-    #include "FreeRTOS.h"
-    #include "task.h"
-    #include "semphr.h"
-    #include "event_groups.h"
-    #else
-    #error "OSAL_RTOS_TYPE is not defined"
-    #endif
+#if OSAL_RTOS_TYPE == OSAL_THREADX
+#include "tx_api.h"
+#elif OSAL_RTOS_TYPE == OSAL_FREERTOS
+#include "FreeRTOS.h"
+#include "event_groups.h"
+#include "semphr.h"
+#include "task.h"
+#else
+#error "OSAL_RTOS_TYPE is not defined"
+#endif
 #endif
 
 /* OSAL通用数据类型定义 */
-typedef enum {
+typedef enum
+{
     OSAL_SUCCESS = 0,
     OSAL_ERROR,
     OSAL_INVALID_PARAM,
@@ -48,13 +49,14 @@ typedef enum {
 /* 线程相关类型定义 */
 #if (OSAL_RTOS_TYPE == OSAL_THREADX)
 typedef TX_THREAD osal_thread_t;
-typedef UINT osal_thread_priority_t;
+typedef UINT      osal_thread_priority_t;
 typedef VOID (*osal_thread_entry_t)(ULONG);
 #elif (OSAL_RTOS_TYPE == OSAL_FREERTOS)
 // FreeRTOS下，osal_thread_t需要包含StaticTask_t结构体
-typedef struct {
-    StaticTask_t task_buffer;  // 任务控制块缓冲区
-    TaskHandle_t task_handle;  // 任务句柄
+typedef struct
+{
+    StaticTask_t task_buffer; // 任务控制块缓冲区
+    TaskHandle_t task_handle; // 任务句柄
 } osal_thread_t;
 typedef UBaseType_t osal_thread_priority_t;
 typedef void (*osal_thread_entry_t)(void *);
@@ -65,7 +67,8 @@ typedef void (*osal_thread_entry_t)(void *);
 typedef TX_SEMAPHORE osal_sem_t;
 #elif (OSAL_RTOS_TYPE == OSAL_FREERTOS)
 // FreeRTOS下，osal_sem_t需要包含StaticSemaphore_t结构体
-typedef struct {
+typedef struct
+{
     SemaphoreHandle_t sem_handle;
     StaticSemaphore_t sem_buffer;
 } osal_sem_t;
@@ -76,7 +79,8 @@ typedef struct {
 typedef TX_MUTEX osal_mutex_t;
 #elif (OSAL_RTOS_TYPE == OSAL_FREERTOS)
 // FreeRTOS下，osal_mutex_t需要包含StaticSemaphore_t结构体
-typedef struct {
+typedef struct
+{
     SemaphoreHandle_t mutex_handle;
     StaticSemaphore_t mutex_buffer;
 } osal_mutex_t;
@@ -87,23 +91,24 @@ typedef struct {
 typedef TX_EVENT_FLAGS_GROUP osal_event_t;
 #elif (OSAL_RTOS_TYPE == OSAL_FREERTOS)
 // FreeRTOS下，osal_event_t需要包含StaticEventGroup_t结构体
-typedef struct {
+typedef struct
+{
     EventGroupHandle_t handle;
     StaticEventGroup_t buffer;
 } osal_event_t;
 #endif
 /* 事件等待选项 */
-#define OSAL_EVENT_WAIT_FLAG_AND            0x01U  /* 等待所有指定的事件标志都被设置 */
-#define OSAL_EVENT_WAIT_FLAG_OR             0x02U  /* 等待任何指定的事件标志被设置 */
-#define OSAL_EVENT_WAIT_FLAG_CLEAR          0x04U  /* 在等待完成后清除所等待的事件标志 */
-
+#define OSAL_EVENT_WAIT_FLAG_AND   0x01U /* 等待所有指定的事件标志都被设置 */
+#define OSAL_EVENT_WAIT_FLAG_OR    0x02U /* 等待任何指定的事件标志被设置 */
+#define OSAL_EVENT_WAIT_FLAG_CLEAR 0x04U /* 在等待完成后清除所等待的事件标志 */
 
 /* 定时器类型定义 */
 #if (OSAL_RTOS_TYPE == OSAL_THREADX)
 typedef TX_TIMER osal_timer_t;
 typedef VOID (*osal_timer_callback_t)(ULONG);
 #elif (OSAL_RTOS_TYPE == OSAL_FREERTOS)
-typedef struct {
+typedef struct
+{
     TimerHandle_t handle;
     StaticTimer_t buffer;
 } osal_timer_t;
@@ -112,8 +117,9 @@ typedef void (*osal_timer_callback_t)(TimerHandle_t xTimer);
 #endif
 
 /* 定时器模式 */
-typedef enum {
-    OSAL_TIMER_MODE_ONCE    = 0,  /* 单次触发模式 */
+typedef enum
+{
+    OSAL_TIMER_MODE_ONCE     = 0, /* 单次触发模式 */
     OSAL_TIMER_MODE_PERIODIC = 1  /* 周期触发模式 */
 } osal_timer_mode_t;
 
@@ -121,7 +127,8 @@ typedef enum {
 #if (OSAL_RTOS_TYPE == OSAL_THREADX)
 typedef TX_QUEUE osal_queue_t;
 #elif (OSAL_RTOS_TYPE == OSAL_FREERTOS)
-typedef struct {
+typedef struct
+{
     QueueHandle_t handle;
     StaticQueue_t buffer;
 } osal_queue_t;
@@ -141,10 +148,9 @@ typedef UINT osal_critical_state_t;
 typedef BaseType_t osal_critical_state_t;
 #endif
 
-
 /* 常量定义 */
-#define OSAL_WAIT_FOREVER        ((osal_tick_t)-1)
-#define OSAL_NO_WAIT             (0)
+#define OSAL_WAIT_FOREVER ((osal_tick_t) - 1)
+#define OSAL_NO_WAIT      (0)
 
 /* 函数声明 */
 
@@ -160,12 +166,8 @@ typedef BaseType_t osal_critical_state_t;
  * @param {osal_thread_priority_t} priority, 线程优先级
  * @return {osal_status_t} OSAL_SUCCESS - 成功, OSAL_ERROR - 失败
  */
-osal_status_t osal_thread_create(osal_thread_t *thread,
-                                 const char *name,
-                                 osal_thread_entry_t entry,
-                                 void *argument,
-                                 void *stack_pointer,
-                                 unsigned int stack_size,
+osal_status_t osal_thread_create(osal_thread_t *thread, const char *name, osal_thread_entry_t entry,
+                                 void *argument, void *stack_pointer, unsigned int stack_size,
                                  osal_thread_priority_t priority);
 /**
  * @description: 启动线程
@@ -198,21 +200,24 @@ osal_status_t osal_sem_create(osal_sem_t *sem, const char *name, unsigned int in
  * @description: 等待(获取)信号量
  * @param {osal_sem_t*} sem, 信号量句柄指针
  * @param {osal_tick_t} timeout, 超时时间，OSAL_WAIT_FOREVER表示永久等待，OSAL_NO_WAIT表示不等待
- * @return {osal_status_t} OSAL_SUCCESS - 成功获取信号量, OSAL_TIMEOUT - 超时, OSAL_ERROR - 错误, OSAL_INVALID_PARAM - 参数无效
+ * @return {osal_status_t} OSAL_SUCCESS - 成功获取信号量, OSAL_TIMEOUT - 超时, OSAL_ERROR - 错误,
+ * OSAL_INVALID_PARAM - 参数无效
  */
 osal_status_t osal_sem_wait(osal_sem_t *sem, osal_tick_t timeout);
 /**
  * @description: 释放(发送)信号量
  * @param {osal_sem_t*} sem, 信号量句柄指针
- * @return {osal_status_t} OSAL_SUCCESS - 成功释放信号量, OSAL_ERROR - 错误, OSAL_INVALID_PARAM - 参数无效
+ * @return {osal_status_t} OSAL_SUCCESS - 成功释放信号量, OSAL_ERROR - 错误, OSAL_INVALID_PARAM -
+ * 参数无效
  */
 osal_status_t osal_sem_post(osal_sem_t *sem);
 /**
  * @description: 删除信号量
  * @param {osal_sem_t*} sem, 信号量句柄指针
- * @return {osal_status_t} OSAL_SUCCESS - 成功删除信号量, OSAL_ERROR - 错误, OSAL_INVALID_PARAM - 参数无效
+ * @return {osal_status_t} OSAL_SUCCESS - 成功删除信号量, OSAL_ERROR - 错误, OSAL_INVALID_PARAM -
+ * 参数无效
  */
-osal_status_t osal_sem_delete(osal_sem_t *sem); 
+osal_status_t osal_sem_delete(osal_sem_t *sem);
 /**
  * @description: 创建互斥量
  * @param {osal_mutex_t*} mutex, 互斥量句柄指针
@@ -259,16 +264,18 @@ osal_status_t osal_event_set(osal_event_t *event, unsigned int flags);
  * @param {osal_event_t*} event, 事件组句柄指针
  * @param {unsigned int} requested_flags, 要等待的事件标志
  * @param {unsigned int} options, 等待选项
-  *        OSAL_EVENT_WAIT_FLAG_AND - 等待所有指定的事件标志都被设置
-  *        OSAL_EVENT_WAIT_FLAG_OR - 等待任何指定的事件标志被设置
-  *        OSAL_EVENT_WAIT_FLAG_CLEAR - 在等待完成后清除所等待的事件标志
-  *        可以组合使用，例如：OSAL_EVENT_WAIT_FLAG_OR | OSAL_EVENT_WAIT_FLAG_CLEAR
+ *        OSAL_EVENT_WAIT_FLAG_AND - 等待所有指定的事件标志都被设置
+ *        OSAL_EVENT_WAIT_FLAG_OR - 等待任何指定的事件标志被设置
+ *        OSAL_EVENT_WAIT_FLAG_CLEAR - 在等待完成后清除所等待的事件标志
+ *        可以组合使用，例如：OSAL_EVENT_WAIT_FLAG_OR | OSAL_EVENT_WAIT_FLAG_CLEAR
  * @param {osal_tick_t} timeout, 超时时间
  * @param {unsigned int*} actual_flags, 实际返回的事件标志
- * @return {osal_status_t} OSAL_SUCCESS - 获取成功, OSAL_TIMEOUT - 超时, OSAL_ERROR - 获取失败, OSAL_INVALID_PARAM - 参数无效
+ * @return {osal_status_t} OSAL_SUCCESS - 获取成功, OSAL_TIMEOUT - 超时, OSAL_ERROR - 获取失败,
+ * OSAL_INVALID_PARAM - 参数无效
  */
-osal_status_t osal_event_wait(osal_event_t *event, unsigned int requested_flags, 
-                              unsigned int options, osal_tick_t timeout, unsigned int *actual_flags);
+osal_status_t osal_event_wait(osal_event_t *event, unsigned int requested_flags,
+                              unsigned int options, osal_tick_t timeout,
+                              unsigned int *actual_flags);
 /**
  * @description: 清除事件标志
  * @param {osal_event_t*} event, 事件组句柄指针
@@ -293,12 +300,9 @@ osal_status_t osal_event_delete(osal_event_t *event);
  * @param {osal_timer_mode_t} mode - 定时器模式
  * @return {osal_status_t} OSAL_SUCCESS - 成功, OSAL_ERROR - 失败
  */
-osal_status_t osal_timer_create(osal_timer_t *timer, 
-                                const char *name,
-                                osal_timer_callback_t callback,
-                                void *argument,
-                                unsigned int timeout_ms,
-                                osal_timer_mode_t mode);
+osal_status_t osal_timer_create(osal_timer_t *timer, const char *name,
+                                osal_timer_callback_t callback, void *argument,
+                                unsigned int timeout_ms, osal_timer_mode_t mode);
 
 /**
  * @description: 启动定时器
@@ -346,11 +350,8 @@ uint8_t osal_timer_is_active(osal_timer_t *timer);
  * @param {void*} msg_buffer - 消息缓冲区内存
  * @return {osal_status_t} OSAL_SUCCESS - 成功, OSAL_ERROR - 失败
  */
-osal_status_t osal_queue_create(osal_queue_t *queue, 
-                                const char *name,
-                                unsigned int msg_size,
-                                unsigned int msg_count,
-                                void *msg_buffer);
+osal_status_t osal_queue_create(osal_queue_t *queue, const char *name, unsigned int msg_size,
+                                unsigned int msg_count, void *msg_buffer);
 
 /**
  * @description: 向队列发送消息
@@ -391,7 +392,6 @@ osal_status_t osal_enter_critical(osal_critical_state_t *crit);
  * @return {osal_status_t} OSAL_SUCCESS - 成功, OSAL_INVALID_PARAM - 参数错误
  */
 osal_status_t osal_exit_critical(osal_critical_state_t *crit);
-
 
 // 通用延时函数
 /**

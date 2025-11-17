@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-10-23 00:06:07
  * @FilePath: \rm_base\modules\board_comm\board_comm.h
- * @Description: 
+ * @Description:
  */
 #ifndef _BOARD_COMM_H_
 #define _BOARD_COMM_H_
@@ -16,9 +16,10 @@
 #include <stdint.h>
 
 // 板间通信结构体
-typedef struct {
+typedef struct
+{
     Can_Device *candevice;
-    uint8_t offlinemanage_index;
+    uint8_t     offlinemanage_index;
 } board_comm_t;
 
 // 函数声明

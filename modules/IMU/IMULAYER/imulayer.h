@@ -14,15 +14,14 @@
 #include "osal_def.h"
 #include <stdint.h>
 
-
-typedef struct {
-    uint8_t init_flag;
+typedef struct
+{
+    uint8_t    init_flag;
     IMU_Data_t data;
-#if IMU_TYPE  == IMU_BMI088
+#if IMU_TYPE == IMU_BMI088
     BMI088_Instance_t imu_handle;
 #endif
 } IMU_Instance_t;
-
 
 /**
  * @description: 初始化IMU

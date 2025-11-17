@@ -4,7 +4,7 @@
  * @LastEditors: laladuduqq 2807523947@qq.com
  * @LastEditTime: 2025-09-17 15:56:56
  * @FilePath: /rm_base/modules/IST8310/ist8310.h
- * @Description: 
+ * @Description:
  */
 #ifndef _IST8310_H_
 #define _IST8310_H_
@@ -14,9 +14,9 @@
 
 typedef struct
 {
-    I2C_Device *i2c_device;       // iic实例
-    uint8_t iic_buffer[8];     // iic接收缓冲区
-    float mag[3];              // 三轴磁力计数据,[x,y,z]
+    I2C_Device *i2c_device;    // iic实例
+    uint8_t     iic_buffer[8]; // iic接收缓冲区
+    float       mag[3];        // 三轴磁力计数据,[x,y,z]
 } IST8310_Instance_t;
 
 /**
