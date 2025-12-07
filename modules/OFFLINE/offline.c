@@ -1,8 +1,8 @@
 /*
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-11 19:45:50
- * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-09-30 14:10:20
+ * @LastEditors: Mas sji733055@gmail.com
+ * @LastEditTime: 2025-12-07 19:24:05
  * @FilePath: /rm_base/modules/OFFLINE/offline.c
  * @Description:
  */
@@ -84,7 +84,7 @@ void offline_module_device_update(uint8_t device_index)
     {
         if (device_index < offline_manager_ptr->device_count)
         {
-            offline_manager_ptr->devices[device_index].last_time = tx_time_get();
+            offline_manager_ptr->devices[device_index].last_time = DWT_GetTimeline_ms();
         }
     }
 }

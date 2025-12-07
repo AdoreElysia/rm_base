@@ -1,8 +1,8 @@
 /*
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-13 10:14:45
- * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-30 20:21:28
+ * @LastEditors: Mas sji733055@gmail.com
+ * @LastEditTime: 2025-12-07 19:17:48
  * @FilePath: \rm_base\applications\robot_init\robot_init.c
  * @Description:
  */
@@ -40,9 +40,10 @@ void app_init()
     ins_task_init();
     dm_imu_task_init();
     remote_task_init();
-    motor_task_init();
     robot_control_task_init();
     gimbal_task_init();
+    motor_task_init();
+
 }
 
 void robot_init()
