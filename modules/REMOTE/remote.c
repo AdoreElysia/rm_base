@@ -73,7 +73,7 @@ osal_status_t remote_init(remote_instance_t *remote)
     }
 #endif
 
-    if (ret == OSAL_SUCCESS && REMOTE_SOURCE != 0 && REMOTE_VT_SOURCE != 0)
+    if (ret == OSAL_SUCCESS && (REMOTE_SOURCE != 0 || REMOTE_VT_SOURCE != 0))
     {
         remote_instance->initflag = 1;
         LOG_INFO("remote init success");
