@@ -1,8 +1,8 @@
 /*
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-16 10:10:42
- * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-01 20:20:59
+ * @LastEditors: Mas sji733055@gmail.com
+ * @LastEditTime: 2025-12-08 18:27:03
  * @FilePath: /rm_base/modules/DM_IMU/dm_imu.c
  * @Description:
  */
@@ -42,8 +42,8 @@ void dm_imu_request(uint8_t reg)
     }
 
     dm_imu_module->can_device->txconf.DLC = 4;
-    dm_imu_module->can_device->tx_buff[0] = (uint8_t)DM_IMU_RX_ID;
-    dm_imu_module->can_device->tx_buff[1] = (uint8_t)(DM_IMU_RX_ID >> 8);
+    dm_imu_module->can_device->tx_buff[0] = (uint8_t)DM_IMU_CMD_READ_REG;
+    dm_imu_module->can_device->tx_buff[1] = (uint8_t)(DM_IMU_CMD_READ_REG >> 8);
     dm_imu_module->can_device->tx_buff[2] = reg;
     dm_imu_module->can_device->tx_buff[3] = 0XCC;
 
