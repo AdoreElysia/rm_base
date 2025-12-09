@@ -424,7 +424,29 @@ void DMMotorcontrol(void)
                 motor->motor_controller.speed_PID.Output = 0;
                 motor->motor_controller.angle_PID.Output = 0;
             }
-            mit_ctrl(motor, 0, 0, 0, 0, control_output);
+            switch (motor->DMMotor_Mode_type) 
+            {
+            case DM_MIT_MODE:
+            {
+                mit_ctrl(motor, 0, 0, 0, 0, control_output);
+                break;
+            }
+            case DM_POS_MODE:
+            {
+                pos_speed_ctrl(motor, control_output, PI);
+                break;
+            }
+            case DM_SPD_MODE:
+            {
+                speed_ctrl(motor, control_output);
+                break;
+            }
+            case DM_PSI_MODE:
+            {
+                psi_ctrl(motor, 0, 0, control_output);
+                break;
+            }
+            }
         }
         else
         {
