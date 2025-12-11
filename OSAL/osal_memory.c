@@ -1,5 +1,11 @@
-
-
+/*
+ * @Author: laladuduqq 17503181697@163.com
+ * @Date: 2025-12-11 10:37:53
+ * @LastEditors: laladuduqq 17503181697@163.com
+ * @LastEditTime: 2025-12-11 20:53:49
+ * @FilePath: /rm_base/OSAL/osal_memory.c
+ * @Description:
+ */
 #include "osal_def.h"
 #include <stddef.h>
 
@@ -22,7 +28,7 @@ void *osal_malloc(size_t size)
         return NULL;
     }
 
-    status = tx_byte_allocate(&tx_app_byte_pool, &ptr, size, TX_NO_WAIT);
+    status = tx_byte_allocate(&tx_app_byte_pool, &ptr, size, TX_WAIT_FOREVER);
 
     if (status != TX_SUCCESS)
     {
@@ -44,7 +50,6 @@ void osal_free(void *ptr)
 
     tx_byte_release(ptr);
 }
-
 
 /* ==================== FreeRTOS 内存管理 ==================== */
 #elif (OSAL_RTOS_TYPE == OSAL_FREERTOS)
