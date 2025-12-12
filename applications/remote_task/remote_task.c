@@ -1,8 +1,8 @@
 /*
  * @Author: laladuduqq 2807523947@qq.com
  * @Date: 2025-09-15 23:49:44
- * @LastEditors: laladuduqq 2807523947@qq.com
- * @LastEditTime: 2025-10-01 21:08:38
+ * @LastEditors: laladuduqq 17503181697@163.com
+ * @LastEditTime: 2025-12-12 22:53:28
  * @FilePath: /rm_base/applications/remote_task/remote_task.c
  * @Description:
  */
@@ -82,6 +82,9 @@ void remote_vt_task(ULONG thread_input)
                 vt03_decode(&remote_instance.vt03_instance, data);
             }
         }
+#else  
+        // 无图传遥控器，自动让出
+        osal_delay_ms(100); 
 #endif
     }
 }
