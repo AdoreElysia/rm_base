@@ -147,7 +147,7 @@ static void MotorSenderGrouping(DJIMotor_t *motor, Can_Device_Init_Config_s *con
         else
         {
             motor_send_num = motor_id - 4;
-            motor_grouping = config->can_handle == &hcan2 ? 0 : 5;
+            motor_grouping = config->can_handle == &hcan1 ? 0 : 5;
         }
 
         // 计算接收id并设置分组发送id
