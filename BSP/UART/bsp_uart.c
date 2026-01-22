@@ -177,7 +177,7 @@ int BSP_UART_Send(UART_Device *device, uint8_t *data, uint16_t len)
         return (status == OSAL_SUCCESS) ? len : -1;
     }
 
-    return -1;
+    return (status == OSAL_SUCCESS) ? len : -1;
 }
 uint8_t *BSP_UART_Read(UART_Device *device)
 {
