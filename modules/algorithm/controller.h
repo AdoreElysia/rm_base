@@ -21,6 +21,9 @@
 #define abs(x) ((x > 0) ? x : -x)
 #endif
 
+// 前馈补偿函数指针类型
+typedef float (*FeedforwardFunc)(float ref, float degree, float angular_velocity);
+
 // PID 优化环节使能标志位,通过位与可以判断启用的优化环节;也可以改成位域的形式
 typedef enum
 {
@@ -66,6 +69,7 @@ typedef struct
     float             CoefB;         // 变速积分 ITerm = Err*((A-abs(err)+B)/A)  when B<|err|<A+B
     float             Output_LPF_RC; // 输出滤波器 RC = 1/omegac
     float             Derivative_LPF_RC; // 微分滤波器系数
+    FeedforwardFunc   feedforward_func;  // 前馈补偿函数指针
 
     //-----------------------------------
     // for calculating
@@ -109,6 +113,7 @@ typedef struct // config parameter
     float             CoefB;         // ITerm = Err*((A-abs(err)+B)/A)  when B<|err|<A+B
     float             Output_LPF_RC; // RC = 1/omegac
     float             Derivative_LPF_RC;
+    FeedforwardFunc   feedforward_func;
 } PID_Init_Config_s;
 
 /**

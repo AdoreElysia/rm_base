@@ -143,6 +143,7 @@ void PIDInit(PIDInstance *pid, PID_Init_Config_s *config)
     pid->Improve       = config->Improve;
     pid->MaxOut        = config->MaxOut;
     pid->IntegralLimit = config->IntegralLimit;
+    pid->feedforward_func = config->feedforward_func;
     // set rest of memory to 0
 }
 
@@ -192,6 +193,13 @@ float PIDCalculate(PIDInstance *pid, float measure, float ref)
 
         pid->Iout += pid->ITerm;                         // 累加积分
         pid->Output = pid->Pout + pid->Iout + pid->Dout; // 计算输出
+
+        // 加上前馈输出
+        if (pid->feedforward_func != NULL)
+        {
+            float feedforward = pid->feedforward_func(pid->Ref, pid->Measure, 0.0f);
+            pid->Output += feedforward;
+        }
 
         // 输出滤波
         if (pid->Improve & PID_OutputFilter)
